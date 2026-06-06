@@ -1,9 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
+import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useMemo, useState } from 'react';
 import {
+  ActivityIndicator,
+  Linking,
   Pressable,
   SafeAreaView,
   ScrollView,
@@ -13,11 +16,10 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { useRunBeatAudio } from './src/audio/useRunBeatAudio';
 import { TRACKS } from './src/data/tracks';
-import { AppSettings, AppTab, InputMode, Track } from './src/types';
+import { AppSettings, AppTab, InputMode, RemotePlaylistBand, RemoteSong, Track } from './src/types';
 import {
   DEFAULT_SETTINGS,
   cadenceFromPace,
@@ -33,6 +35,13 @@ import {
   speedToPace,
   strideFor,
 } from './src/utils/running';
+import {
+  buildPresetSongs,
+  getSongArtists,
+  makeCadenceQueries,
+  makeYouTubeMusicSearchUrl,
+  normalizeBackendUrl,
+} from './src/utils/youtube';
 
 const STORAGE_KEY = 'runbeat-settings-v1';
 
@@ -46,6 +55,11 @@ export default function App() {
   const [goalTimeSec, setGoalTimeSec] = useState(1620);
   const [cadenceOverride, setCadenceOverride] = useState<number | null>(null);
   const [selectedTrackId, setSelectedTrackId] = useState<string>(TRACKS[6].id);
+  const [selectedSongId, setSelectedSongId] = useState<string | null>(null);
+  const [remoteSongs, setRemoteSongs] = useState<RemoteSong[]>([]);
+  const [remoteBands, setRemoteBands] = useState<RemotePlaylistBand[]>([]);
+  const [isFetchingSongs, setIsFetchingSongs] = useState(false);
+  const [songsError, setSongsError] = useState<string | null>(null);
   const [running, setRunning] = useState(false);
   const [started, setStarted] = useState(false);
   const [musicEnabled, setMusicEnabled] = useState(true);
@@ -78,8 +92,10 @@ export default function App() {
   const autoCadence = useMemo(() => cadenceFromPace(effectivePace, runnerStride), [effectivePace, runnerStride]);
   const cadence = cadenceOverride ?? autoCadence;
   const liveStride = useMemo(() => strideFor(effectiveSpeed, cadence), [cadence, effectiveSpeed]);
+  const backendUrl = useMemo(() => normalizeBackendUrl(settings.backendUrl), [settings.backendUrl]);
 
   const rankedTracks = useMemo(() => getAllTracksSorted(TRACKS, cadence), [cadence]);
+  const presetSongs = useMemo(() => buildPresetSongs(TRACKS), []);
   const suggestedTracks = useMemo(
     () => getSuggestedTracks(TRACKS, cadence, settings.tolerance),
     [cadence, settings.tolerance]
@@ -88,12 +104,36 @@ export default function App() {
     () => rankedTracks.find((entry) => entry.track.id === selectedTrackId)?.track ?? rankedTracks[0]?.track ?? null,
     [rankedTracks, selectedTrackId]
   );
+  const selectedPresetSong = useMemo(
+    () =>
+      presetSongs.find((song) => song.id === `preset-${selectedTrackId}`) ??
+      presetSongs.find((song) => song.bpmHint === cadence) ??
+      presetSongs[0] ??
+      null,
+    [cadence, presetSongs, selectedTrackId]
+  );
+  const selectedSong = useMemo(
+    () => remoteSongs.find((song) => song.id === selectedSongId) ?? remoteSongs[0] ?? selectedPresetSong,
+    [remoteSongs, selectedPresetSong, selectedSongId]
+  );
+  const usingRemoteMusic = !!selectedSong;
 
   useEffect(() => {
     if (!selectedTrack && rankedTracks[0]) {
       setSelectedTrackId(rankedTracks[0].track.id);
     }
   }, [rankedTracks, selectedTrack]);
+
+  useEffect(() => {
+    if (remoteSongs.length === 0) {
+      setSelectedSongId(null);
+      return;
+    }
+
+    if (!selectedSongId || !remoteSongs.some((song) => song.id === selectedSongId)) {
+      setSelectedSongId(remoteSongs[0].id);
+    }
+  }, [remoteSongs, selectedSongId]);
 
   useEffect(() => {
     if (!running) return;
@@ -106,14 +146,67 @@ export default function App() {
     return () => clearInterval(id);
   }, [effectiveSpeed, running]);
 
+  async function fetchSongsForCadence() {
+    if (!backendUrl) {
+      setSongsError('Defina a URL do backend nas configuracoes.');
+      setRemoteSongs([]);
+      setRemoteBands([]);
+      return;
+    }
+
+    setIsFetchingSongs(true);
+    setSongsError(null);
+
+    try {
+      const [searchResponse, playlistResponse] = await Promise.all([
+        fetch(`${backendUrl}/search?bpm=${encodeURIComponent(cadence)}&limit=12`),
+        fetch(`${backendUrl}/playlist?bpm=${encodeURIComponent(cadence)}&limit_per_band=4`),
+      ]);
+
+      if (!searchResponse.ok) {
+        throw new Error(`Busca respondeu ${searchResponse.status}`);
+      }
+
+      if (!playlistResponse.ok) {
+        throw new Error(`Playlist respondeu ${playlistResponse.status}`);
+      }
+
+      const data = (await searchResponse.json()) as { items?: RemoteSong[] };
+      const playlistData = (await playlistResponse.json()) as { bands?: RemotePlaylistBand[] };
+      const items = Array.isArray(data.items) ? data.items : [];
+      const bands = Array.isArray(playlistData.bands) ? playlistData.bands : [];
+      setRemoteSongs(items);
+      setRemoteBands(bands);
+
+      if (items.length === 0) {
+        setSongsError('O backend respondeu, mas nao encontrou musicas para esse BPM.');
+      }
+    } catch (error) {
+      setRemoteSongs([]);
+      setRemoteBands([]);
+      setSongsError(error instanceof Error ? error.message : 'Falha ao buscar musicas reais.');
+    } finally {
+      setIsFetchingSongs(false);
+    }
+  }
+
+  useEffect(() => {
+    if (!backendUrl) return;
+    const timer = setTimeout(() => {
+      void fetchSongsForCadence();
+    }, 450);
+
+    return () => clearTimeout(timer);
+  }, [backendUrl, cadence]);
+
   useRunBeatAudio({
     cadence,
     metronomeSound: settings.metronomeSound,
     metronomeVolume: settings.metronomeVolume,
     musicVolume: settings.autoDuck ? Math.min(settings.musicVolume, settings.metronomeVolume * 0.8) : settings.musicVolume,
-    musicTrack: selectedTrack,
+    musicTrack: usingRemoteMusic ? null : selectedTrack,
     shouldPlayMetronome: running,
-    shouldPlayMusic: running && musicEnabled && !!selectedTrack,
+    shouldPlayMusic: running && musicEnabled && !usingRemoteMusic && !!selectedTrack,
   });
 
   const updateSettings = <K extends keyof AppSettings>(key: K, value: AppSettings[K]) => {
@@ -139,12 +232,31 @@ export default function App() {
   };
 
   const nextTrack = () => {
+    if (remoteSongs.length > 0) {
+      const index = remoteSongs.findIndex((song) => song.id === selectedSong?.id);
+      const next = remoteSongs[(index + 1 + remoteSongs.length) % remoteSongs.length];
+      setSelectedSongId(next.id);
+      return;
+    }
+
     const list = suggestedTracks.length > 0 ? suggestedTracks : rankedTracks;
     if (list.length === 0) return;
     const index = list.findIndex((entry) => entry.track.id === selectedTrackId);
     const next = list[(index + 1 + list.length) % list.length];
     setSelectedTrackId(next.track.id);
   };
+
+  async function openRemoteSong(song: RemoteSong | null) {
+    if (!song) return;
+    const preferredUrl = song.musicUrl;
+    const supported = await Linking.canOpenURL(preferredUrl);
+    await Linking.openURL(supported ? preferredUrl : song.youtubeUrl);
+  }
+
+  async function openYouTubeMusicSearch() {
+    const url = makeYouTubeMusicSearchUrl(makeCadenceQueries(cadence)[0]);
+    await Linking.openURL(url);
+  }
 
   const currentFoot = Math.floor(elapsed * (cadence / 60)) % 2 === 0 ? 'Esquerda' : 'Direita';
   const currentScreen = (() => {
@@ -165,8 +277,11 @@ export default function App() {
             onStop={stopRun}
             musicEnabled={musicEnabled}
             onToggleMusic={() => setMusicEnabled((current) => !current)}
-            selectedTrack={selectedTrack}
+            selectedTrack={remoteSongs.length > 0 ? null : selectedTrack}
+            selectedSong={selectedSong}
             nextTrack={nextTrack}
+            onOpenRemoteSong={() => void openRemoteSong(selectedSong)}
+            onOpenMusicSearch={() => void openYouTubeMusicSearch()}
             metronomeVolume={settings.metronomeVolume}
             musicVolume={settings.musicVolume}
             onChangeMetronomeVolume={(value) => updateSettings('metronomeVolume', value)}
@@ -178,6 +293,17 @@ export default function App() {
           <TracksScreen
             cadence={cadence}
             tolerance={settings.tolerance}
+            backendUrl={backendUrl}
+            isFetchingSongs={isFetchingSongs}
+            songsError={songsError}
+            remoteSongs={remoteSongs}
+            presetSongs={presetSongs}
+            remoteBands={remoteBands}
+            selectedSongId={selectedSong?.id ?? null}
+            onRefresh={() => void fetchSongsForCadence()}
+            onSelectSong={setSelectedSongId}
+            onOpenSong={(song) => void openRemoteSong(song)}
+            onOpenSearch={() => void openYouTubeMusicSearch()}
             onChangeTolerance={(value) => updateSettings('tolerance', value)}
             tracks={rankedTracks}
             selectedTrackId={selectedTrackId}
@@ -213,8 +339,10 @@ export default function App() {
             pace={effectivePace}
             speed={effectiveSpeed}
             stride={liveStride}
-            selectedTrack={selectedTrack}
+            selectedTrack={remoteSongs.length > 0 ? null : selectedTrack}
+            selectedSong={selectedSong}
             onStartRun={startRun}
+            onOpenRemoteSong={() => void openRemoteSong(selectedSong)}
           />
         );
     }
@@ -278,7 +406,9 @@ function RhythmScreen(props: {
   speed: number;
   stride: number;
   selectedTrack: Track | null;
+  selectedSong: RemoteSong | null;
   onStartRun: () => void;
+  onOpenRemoteSong: () => void;
 }) {
   return (
     <View style={styles.screen}>
@@ -297,7 +427,7 @@ function RhythmScreen(props: {
                 {formatPace(props.paceSec)}
                 <Text style={styles.metricUnit}> /km</Text>
               </Text>
-              <Text style={styles.metricHint}>≈ {props.speed.toFixed(1)} km/h</Text>
+              <Text style={styles.metricHint}>~ {props.speed.toFixed(1)} km/h</Text>
             </View>
             <Stepper
               onDec={() => props.onChangePace(clamp(props.paceSec + 5, 180, 540))}
@@ -314,7 +444,7 @@ function RhythmScreen(props: {
                 {props.speedKmh.toFixed(1)}
                 <Text style={styles.metricUnit}> km/h</Text>
               </Text>
-              <Text style={styles.metricHint}>≈ {formatPace(props.pace)} /km</Text>
+              <Text style={styles.metricHint}>~ {formatPace(props.pace)} /km</Text>
             </View>
             <Stepper
               onDec={() => props.onChangeSpeed(clamp(Number((props.speedKmh - 0.1).toFixed(1)), 6, 20))}
@@ -377,9 +507,17 @@ function RhythmScreen(props: {
         </Pressable>
       </Card>
 
-      {props.selectedTrack ? (
+      {props.selectedSong ? (
         <Card>
-          <Text style={styles.cardLabel}>Playlist sugerida no BPM</Text>
+          <Text style={styles.cardLabel}>Musica real sugerida</Text>
+          <RemoteSongRow song={props.selectedSong} active />
+          <Pressable onPress={props.onOpenRemoteSong} style={styles.secondaryButton}>
+            <Text style={styles.secondaryButtonText}>Abrir no YouTube Music</Text>
+          </Pressable>
+        </Card>
+      ) : props.selectedTrack ? (
+        <Card>
+          <Text style={styles.cardLabel}>Fallback local</Text>
           <TrackRow track={props.selectedTrack} distance={0} active />
         </Card>
       ) : null}
@@ -407,7 +545,10 @@ function RunScreen(props: {
   musicEnabled: boolean;
   onToggleMusic: () => void;
   selectedTrack: Track | null;
+  selectedSong: RemoteSong | null;
   nextTrack: () => void;
+  onOpenRemoteSong: () => void;
+  onOpenMusicSearch: () => void;
   metronomeVolume: number;
   musicVolume: number;
   onChangeMetronomeVolume: (value: number) => void;
@@ -450,17 +591,42 @@ function RunScreen(props: {
         </View>
       </View>
 
-      {props.selectedTrack ? (
+      {props.selectedSong ? (
+        <Card>
+          <Text style={styles.cardLabel}>Agora no YouTube Music</Text>
+          <RemoteSongRow song={props.selectedSong} active />
+          <View style={styles.rowBetween}>
+            <Pressable onPress={props.onToggleMusic} style={styles.compactButton}>
+              <Ionicons name={props.musicEnabled ? 'pause' : 'play'} size={18} color="#F4F7FB" />
+              <Text style={styles.compactButtonText}>{props.musicEnabled ? 'Som local off' : 'Som local on'}</Text>
+            </Pressable>
+            <Pressable onPress={props.onOpenRemoteSong} style={styles.compactButton}>
+              <Ionicons name="open-outline" size={18} color="#F4F7FB" />
+              <Text style={styles.compactButtonText}>Abrir musica</Text>
+            </Pressable>
+          </View>
+          <View style={styles.rowBetween}>
+            <Pressable onPress={props.nextTrack} style={styles.compactButton}>
+              <Ionicons name="play-skip-forward" size={18} color="#F4F7FB" />
+              <Text style={styles.compactButtonText}>Proxima sugestao</Text>
+            </Pressable>
+            <Pressable onPress={props.onOpenMusicSearch} style={styles.compactButton}>
+              <Ionicons name="search" size={18} color="#F4F7FB" />
+              <Text style={styles.compactButtonText}>Busca aberta</Text>
+            </Pressable>
+          </View>
+        </Card>
+      ) : props.selectedTrack ? (
         <Card>
           <TrackRow track={props.selectedTrack} distance={0} active />
           <View style={styles.rowBetween}>
             <Pressable onPress={props.onToggleMusic} style={styles.compactButton}>
               <Ionicons name={props.musicEnabled ? 'pause' : 'play'} size={18} color="#F4F7FB" />
-              <Text style={styles.compactButtonText}>{props.musicEnabled ? 'Pausar musica' : 'Tocar musica'}</Text>
+              <Text style={styles.compactButtonText}>{props.musicEnabled ? 'Pausar demo' : 'Tocar demo'}</Text>
             </Pressable>
             <Pressable onPress={props.nextTrack} style={styles.compactButton}>
               <Ionicons name="play-skip-forward" size={18} color="#F4F7FB" />
-              <Text style={styles.compactButtonText}>Proxima faixa</Text>
+              <Text style={styles.compactButtonText}>Proxima demo</Text>
             </Pressable>
           </View>
         </Card>
@@ -499,23 +665,33 @@ function RunScreen(props: {
 function TracksScreen(props: {
   cadence: number;
   tolerance: number;
+  backendUrl: string;
+  isFetchingSongs: boolean;
+  songsError: string | null;
+  remoteSongs: RemoteSong[];
+  presetSongs: RemoteSong[];
+  remoteBands: RemotePlaylistBand[];
+  selectedSongId: string | null;
+  onRefresh: () => void;
+  onSelectSong: (value: string) => void;
+  onOpenSong: (song: RemoteSong) => void;
+  onOpenSearch: () => void;
   onChangeTolerance: (value: number) => void;
   tracks: Array<{ track: Track; distance: number }>;
   selectedTrackId: string;
   onSelectTrack: (value: string) => void;
 }) {
-  const filtered = props.tracks.filter((entry) => entry.distance <= props.tolerance);
-
   return (
     <View style={styles.screen}>
       <Text style={styles.title}>Musicas por BPM</Text>
-      <Text style={styles.subtitle}>RunBeat usa uma biblioteca local de faixas sinteticas para tocar junto com o metrônomo.</Text>
+      <Text style={styles.subtitle}>As faixas abaixo vem do seu backend com busca real no YouTube Music.</Text>
 
       <Card>
         <View style={styles.rowBetween}>
           <Text style={styles.cardLabel}>Cadencia alvo</Text>
           <Text style={[styles.metricValue, { color: '#C3FF3B' }]}>{props.cadence} BPM</Text>
         </View>
+        <Text style={styles.metricHint}>Backend: {props.backendUrl || 'nao configurado'}</Text>
         <View style={styles.row}>
           {[2, 4, 6].map((value) => (
             <PillButton
@@ -526,28 +702,76 @@ function TracksScreen(props: {
             />
           ))}
         </View>
+        <View style={styles.rowBetween}>
+          <Pressable onPress={props.onRefresh} style={styles.secondaryButtonCompact}>
+            <Text style={styles.secondaryButtonText}>Atualizar resultados</Text>
+          </Pressable>
+          <Pressable onPress={props.onOpenSearch} style={styles.secondaryButtonCompact}>
+            <Text style={styles.secondaryButtonText}>Abrir busca direta</Text>
+          </Pressable>
+        </View>
       </Card>
 
       <Card>
-        <Text style={styles.cardLabel}>Compatíveis agora</Text>
-        {filtered.length === 0 ? (
-          <Text style={styles.emptyText}>Nenhuma faixa em ±{props.tolerance} BPM. Aumente a tolerância.</Text>
-        ) : (
-          filtered.map(({ track, distance }) => (
-            <Pressable key={track.id} onPress={() => props.onSelectTrack(track.id)}>
-              <TrackRow track={track} distance={distance} active={track.id === props.selectedTrackId} />
-            </Pressable>
-          ))
-        )}
-      </Card>
-
-      <Card>
-        <Text style={styles.cardLabel}>Todas as faixas</Text>
-        {props.tracks.map(({ track, distance }) => (
-          <Pressable key={track.id} onPress={() => props.onSelectTrack(track.id)}>
-            <TrackRow track={track} distance={distance} active={track.id === props.selectedTrackId} />
+        <Text style={styles.cardLabel}>YouTube Music real</Text>
+        {props.isFetchingSongs ? (
+          <View style={styles.loadingRow}>
+            <ActivityIndicator color="#C3FF3B" />
+            <Text style={styles.metricHint}>Buscando musicas reais...</Text>
+          </View>
+        ) : null}
+        {props.songsError ? <Text style={styles.errorText}>{props.songsError}</Text> : null}
+        {props.remoteSongs.map((song) => (
+          <Pressable
+            key={song.id}
+            onPress={() => props.onSelectSong(song.id)}
+            onLongPress={() => props.onOpenSong(song)}
+          >
+            <RemoteSongRow song={song} active={song.id === props.selectedSongId} />
           </Pressable>
         ))}
+        {!props.isFetchingSongs && props.remoteSongs.length === 0 ? (
+          <Text style={styles.emptyText}>Sem resultados reais agora. O app continua com demos locais como fallback.</Text>
+        ) : null}
+      </Card>
+
+      {props.remoteBands.length > 0 ? (
+        <Card>
+          <Text style={styles.cardLabel}>Playlists por faixa de BPM</Text>
+          <Text style={styles.metricHint}>Grupos prontos para aquecer, sustentar, bater o alvo e acelerar.</Text>
+          {props.remoteBands.map((band) => (
+            <View key={band.id} style={styles.bandBlock}>
+              <View style={styles.rowBetween}>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.bandTitle}>{band.label}</Text>
+                  <Text style={styles.bandHint}>{band.description}</Text>
+                </View>
+                <Text style={styles.bandBpm}>{band.bpm} BPM</Text>
+              </View>
+              {band.items.map((song) => (
+                <Pressable
+                  key={`${band.id}-${song.id}`}
+                  onPress={() => props.onSelectSong(song.id)}
+                  onLongPress={() => props.onOpenSong(song)}
+                >
+                  <RemoteSongRow song={song} active={song.id === props.selectedSongId} />
+                </Pressable>
+              ))}
+            </View>
+          ))}
+        </Card>
+      ) : null}
+
+      <Card>
+        <Text style={styles.cardLabel}>Sugestoes pre-configuradas</Text>
+        <Text style={styles.metricHint}>Se o backend falhar, estas sugestoes ja abrem buscas reais no YouTube Music por faixa e BPM.</Text>
+        {props.presetSongs
+          .filter((song) => Math.abs(song.bpmHint - props.cadence) <= props.tolerance || song.id === `preset-${props.selectedTrackId}`)
+          .map((song) => (
+            <Pressable key={song.id} onPress={() => props.onSelectSong(song.id)} onLongPress={() => props.onOpenSong(song)}>
+              <RemoteSongRow song={song} active={song.id === props.selectedSongId} />
+            </Pressable>
+          ))}
       </Card>
     </View>
   );
@@ -562,7 +786,7 @@ function SettingsScreen(props: {
   return (
     <View style={styles.screen}>
       <Text style={styles.title}>Configuracoes</Text>
-      <Text style={styles.subtitle}>Ajuste perfil de corrida, som do metrônomo e volumes.</Text>
+      <Text style={styles.subtitle}>Ajuste perfil de corrida, backend do YouTube Music, som e volumes.</Text>
 
       <Card>
         <Text style={styles.cardLabel}>Corpo e passada</Text>
@@ -579,10 +803,23 @@ function SettingsScreen(props: {
           value={props.settings.strideMeters}
           onChange={(value) => props.onChangeSettings('strideMeters', clamp(value, 0.8, 1.35))}
         />
-        <Text style={styles.metricHint}>Sugestão automática pela altura: {props.suggestedStride.toFixed(2)} m</Text>
+        <Text style={styles.metricHint}>Sugestao automatica pela altura: {props.suggestedStride.toFixed(2)} m</Text>
         <Pressable onPress={props.onResetStride} style={styles.secondaryButton}>
-          <Text style={styles.secondaryButtonText}>Usar sugestão automática</Text>
+          <Text style={styles.secondaryButtonText}>Usar sugestao automatica</Text>
         </Pressable>
+      </Card>
+
+      <Card>
+        <Text style={styles.cardLabel}>Backend YouTube Music</Text>
+        <TextField
+          label="URL do backend"
+          value={props.settings.backendUrl}
+          onChange={(value) => props.onChangeSettings('backendUrl', value)}
+          placeholder="http://192.168.0.10:8000"
+        />
+        <Text style={styles.metricHint}>
+          Use o IP do computador rodando o backend, por exemplo: http://192.168.0.10:8000
+        </Text>
       </Card>
 
       <Card>
@@ -615,7 +852,7 @@ function SettingsScreen(props: {
         />
         <View style={styles.switchRow}>
           <View style={{ flex: 1 }}>
-            <Text style={styles.switchTitle}>Bip sempre audível</Text>
+            <Text style={styles.switchTitle}>Bip sempre audivel</Text>
             <Text style={styles.switchHint}>Limita a musica abaixo do metronomo</Text>
           </View>
           <Switch
@@ -723,6 +960,24 @@ function TrackRow({ track, distance, active }: { track: Track; distance: number;
   );
 }
 
+function RemoteSongRow({ song, active }: { song: RemoteSong; active: boolean }) {
+  return (
+    <View style={[styles.trackRow, active && styles.trackRowActive]}>
+      <View style={[styles.trackCover, styles.remoteCover]}>
+        <Ionicons name="logo-youtube" size={22} color="#FF4E45" />
+      </View>
+      <View style={{ flex: 1 }}>
+        <Text style={styles.trackTitle}>{song.title}</Text>
+        <Text style={styles.trackArtist}>{getSongArtists(song)}</Text>
+      </View>
+      <View style={{ alignItems: 'flex-end' }}>
+        <Text style={styles.trackBpm}>{song.durationText ?? `${song.bpmHint} BPM`}</Text>
+        <Text style={styles.trackDistance}>YT Music</Text>
+      </View>
+    </View>
+  );
+}
+
 function NumericField({
   label,
   suffix,
@@ -760,6 +1015,36 @@ function NumericField({
           style={styles.input}
         />
         <Text style={styles.inputSuffix}>{suffix}</Text>
+      </View>
+    </View>
+  );
+}
+
+function TextField({
+  label,
+  value,
+  onChange,
+  placeholder,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+}) {
+  return (
+    <View style={styles.fieldRow}>
+      <Text style={styles.fieldLabel}>{label}</Text>
+      <View style={styles.inputShell}>
+        <TextInput
+          autoCapitalize="none"
+          autoCorrect={false}
+          keyboardType="url"
+          value={value}
+          onChangeText={onChange}
+          placeholder={placeholder}
+          placeholderTextColor="#67717C"
+          style={styles.input}
+        />
       </View>
     </View>
   );
@@ -1008,6 +1293,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#171D23',
   },
+  secondaryButtonCompact: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#2A3139',
+    borderRadius: 14,
+    paddingVertical: 10,
+    alignItems: 'center',
+    backgroundColor: '#171D23',
+  },
   secondaryButtonText: {
     color: '#D9E1E9',
     fontWeight: '700',
@@ -1114,6 +1408,11 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  remoteCover: {
+    backgroundColor: '#181C22',
+    borderWidth: 1,
+    borderColor: '#2B333B',
   },
   trackTitle: {
     color: '#F4F7FB',
@@ -1239,6 +1538,36 @@ const styles = StyleSheet.create({
   emptyText: {
     color: '#8A95A1',
     lineHeight: 22,
+  },
+  errorText: {
+    color: '#FF7B7B',
+    lineHeight: 20,
+  },
+  loadingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  bandBlock: {
+    gap: 8,
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: '#222A31',
+  },
+  bandTitle: {
+    color: '#F4F7FB',
+    fontSize: 15,
+    fontWeight: '800',
+  },
+  bandHint: {
+    color: '#8A95A1',
+    fontSize: 12,
+    marginTop: 2,
+  },
+  bandBpm: {
+    color: '#C3FF3B',
+    fontSize: 14,
+    fontWeight: '800',
   },
   fieldRow: {
     gap: 8,

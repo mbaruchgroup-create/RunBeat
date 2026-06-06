@@ -25,4 +25,27 @@ export type AppSettings = {
   musicVolume: number;
   tolerance: number;
   autoDuck: boolean;
+  backendUrl: string;
+};
+
+export type RemoteSong = {
+  id: string;
+  videoId: string;
+  title: string;
+  artists: string[];
+  durationText?: string;
+  album?: string;
+  thumbnailUrl?: string;
+  bpmHint: number;
+  query: string;
+  musicUrl: string;
+  youtubeUrl: string;
+};
+
+export type RemotePlaylistBand = {
+  id: string;
+  label: string;
+  bpm: number;
+  description: string;
+  items: RemoteSong[];
 };

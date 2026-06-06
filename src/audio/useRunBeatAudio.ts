@@ -26,8 +26,8 @@ async function ensureAudioMode() {
   await setAudioModeAsync({
     shouldPlayInBackground: true,
     playsInSilentMode: true,
-    interruptionMode: 'doNotMix',
-    interruptionModeAndroid: 'doNotMix',
+    interruptionMode: 'duckOthers',
+    interruptionModeAndroid: 'duckOthers',
   });
 
   if (Platform.OS === 'android' && !permissionRequested) {

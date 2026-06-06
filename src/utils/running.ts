@@ -8,6 +8,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   musicVolume: 0.5,
   tolerance: 4,
   autoDuck: true,
+  backendUrl: 'http://192.168.0.10:8000',
 };
 
 export function clamp(value: number, min: number, max: number) {
