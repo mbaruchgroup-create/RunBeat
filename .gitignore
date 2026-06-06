@@ -3,6 +3,11 @@ node_modules/
 dist/
 web-build/
 npm-debug.*
+.tmp-runbeat/
+backend/.venv/
+backend/.cache/
+__pycache__/
+*.pyc
 *.jks
 *.p8
 *.p12
