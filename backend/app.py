@@ -1,16 +1,19 @@
 from __future__ import annotations
 
 import json
+import os
 from collections import OrderedDict
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
+from urllib.parse import quote_plus
 
+import requests
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from ytmusicapi import YTMusic
 
-app = FastAPI(title="RunBeat Music Backend", version="1.0.0")
+app = FastAPI(title="RunBeat Music Backend", version="1.1.0")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -23,6 +26,10 @@ ytmusic = YTMusic()
 CACHE_DIR = Path(__file__).resolve().parent / ".cache"
 CACHE_FILE = CACHE_DIR / "ytmusic_cache.json"
 CACHE_TTL = timedelta(hours=12)
+GETSONGBPM_API_KEY = os.getenv("GETSONGBPM_API_KEY", "").strip()
+GETSONGBPM_BASE_URL = "https://api.getsong.co"
+MIN_BPM = 117
+MAX_BPM = 208
 
 
 def load_cache() -> dict[str, Any]:
@@ -76,13 +83,13 @@ def build_playlist_bands(bpm: int) -> list[dict[str, Any]]:
         {
             "id": "warmup",
             "label": "Warmup",
-            "bpm": max(120, bpm - 8),
+            "bpm": max(MIN_BPM, bpm - 8),
             "description": "Entrando no ritmo com passada solta",
         },
         {
             "id": "steady",
             "label": "Steady",
-            "bpm": max(120, bpm - 4),
+            "bpm": max(MIN_BPM, bpm - 4),
             "description": "Rodagem constante e confortável",
         },
         {
@@ -94,13 +101,95 @@ def build_playlist_bands(bpm: int) -> list[dict[str, Any]]:
         {
             "id": "push",
             "label": "Push",
-            "bpm": min(220, bpm + 4),
+            "bpm": min(MAX_BPM, bpm + 4),
             "description": "Para acelerar ou fechar forte",
         },
     ]
 
 
-def normalize_song(item: dict[str, Any], bpm: int, query: str) -> dict[str, Any] | None:
+def normalize_artist_names(artist_value: Any) -> list[str]:
+    if isinstance(artist_value, list):
+        names: list[str] = []
+        for item in artist_value:
+            if isinstance(item, dict) and item.get("name"):
+                names.append(item["name"])
+            elif isinstance(item, str):
+                names.append(item)
+        return names
+    if isinstance(artist_value, dict) and artist_value.get("name"):
+        return [artist_value["name"]]
+    return []
+
+
+def normalize_genres(artist_value: Any) -> list[str]:
+    if isinstance(artist_value, dict):
+        genres = artist_value.get("genres")
+        if isinstance(genres, list):
+          return [genre for genre in genres if isinstance(genre, str)]
+    if isinstance(artist_value, list):
+        all_genres: list[str] = []
+        for item in artist_value:
+            if isinstance(item, dict):
+                genres = item.get("genres")
+                if isinstance(genres, list):
+                    all_genres.extend([genre for genre in genres if isinstance(genre, str)])
+        return sorted(set(all_genres))
+    return []
+
+
+def build_music_query(title: str, artists: list[str], bpm: int) -> str:
+    artist_part = " ".join(artists[:2]).strip()
+    return " ".join(part for part in [title, artist_part, f"{bpm} bpm"] if part).strip()
+
+
+def make_music_url(query: str) -> str:
+    return f"https://music.youtube.com/search?q={quote_plus(query)}"
+
+
+def make_youtube_url(query: str) -> str:
+    return f"https://www.youtube.com/results?search_query={quote_plus(query)}"
+
+
+def normalize_getsong_song(item: dict[str, Any], fallback_bpm: int) -> dict[str, Any] | None:
+    title = item.get("title") or item.get("song_title")
+    song_id = item.get("id") or item.get("song_id")
+    artist_value = item.get("artist")
+    artists = normalize_artist_names(artist_value)
+    genres = normalize_genres(artist_value)
+
+    if not title or not song_id or not artists:
+        return None
+
+    try:
+        bpm = int(float(item.get("tempo") or fallback_bpm))
+    except Exception:
+        bpm = fallback_bpm
+
+    query = build_music_query(title, artists, bpm)
+    video_id = f"getsong-{song_id}"
+
+    album = item.get("album")
+    album_title = None
+    if isinstance(album, dict):
+        album_title = album.get("title")
+
+    return {
+        "id": video_id,
+        "videoId": video_id,
+        "title": title,
+        "artists": artists,
+        "genres": genres,
+        "durationText": item.get("time_sig"),
+        "album": album_title,
+        "thumbnailUrl": None,
+        "bpmHint": bpm,
+        "query": query,
+        "musicUrl": make_music_url(query),
+        "youtubeUrl": make_youtube_url(query),
+    }
+
+
+def normalize_ytmusic_song(item: dict[str, Any], bpm: int, query: str) -> dict[str, Any] | None:
     video_id = item.get("videoId")
     title = item.get("title")
     artists = [artist.get("name") for artist in item.get("artists", []) if artist.get("name")]
@@ -116,6 +205,7 @@ def normalize_song(item: dict[str, Any], bpm: int, query: str) -> dict[str, Any]
         "videoId": video_id,
         "title": title,
         "artists": artists,
+        "genres": [],
         "durationText": item.get("duration"),
         "album": (item.get("album") or {}).get("name") if isinstance(item.get("album"), dict) else None,
         "thumbnailUrl": thumbnail_url,
@@ -126,18 +216,48 @@ def normalize_song(item: dict[str, Any], bpm: int, query: str) -> dict[str, Any]
     }
 
 
-def fetch_song_results(bpm: int, limit: int) -> list[dict[str, Any]]:
-    cache_key = f"search:{bpm}:{limit}"
-    cached = get_cached(cache_key)
-    if cached is not None:
-        return cached
+def getsong_request(path: str, params: dict[str, Any]) -> dict[str, Any] | None:
+    if not GETSONGBPM_API_KEY:
+        return None
 
+    merged = {"api_key": GETSONGBPM_API_KEY, **params}
+    response = requests.get(f"{GETSONGBPM_BASE_URL}{path}", params=merged, timeout=15)
+    response.raise_for_status()
+    return response.json()
+
+
+def matches_genre(song: dict[str, Any], genre: str | None) -> bool:
+    if not genre:
+        return True
+    genres = [value.lower() for value in song.get("genres", []) if isinstance(value, str)]
+    return any(genre.lower() in value for value in genres)
+
+
+def fetch_song_results_from_getsong(bpm: int, limit: int, genre: str | None) -> list[dict[str, Any]]:
+    response = getsong_request("/tempo/", {"bpm": bpm, "limit": limit * 3})
+    if not response:
+        return []
+
+    raw_items = response.get("tempo") or response.get("search") or []
+    items: list[dict[str, Any]] = []
+    for raw_item in raw_items:
+        if not isinstance(raw_item, dict):
+            continue
+        song = normalize_getsong_song(raw_item, bpm)
+        if song and matches_genre(song, genre):
+            items.append(song)
+        if len(items) >= limit:
+            break
+    return items
+
+
+def fetch_song_results_from_ytmusic(bpm: int, limit: int) -> list[dict[str, Any]]:
     deduped: OrderedDict[str, dict[str, Any]] = OrderedDict()
 
     for query in build_queries(bpm):
         results = ytmusic.search(query, filter="songs", limit=min(limit, 8))
         for result in results:
-            song = normalize_song(result, bpm, query)
+            song = normalize_ytmusic_song(result, bpm, query)
             if song and song["videoId"] not in deduped:
                 deduped[song["videoId"]] = song
             if len(deduped) >= limit:
@@ -145,66 +265,107 @@ def fetch_song_results(bpm: int, limit: int) -> list[dict[str, Any]]:
         if len(deduped) >= limit:
             break
 
-    value = list(deduped.values())
+    return list(deduped.values())
+
+
+def fetch_song_results(bpm: int, limit: int, genre: str | None = None) -> list[dict[str, Any]]:
+    cache_key = f"search:{bpm}:{limit}:{genre or 'all'}"
+    cached = get_cached(cache_key)
+    if cached is not None:
+        return cached
+
+    value = fetch_song_results_from_getsong(bpm, limit, genre)
+    if not value:
+        value = fetch_song_results_from_ytmusic(bpm, limit)
+
     set_cached(cache_key, value)
     return value
 
 
-def fetch_playlist_bands(bpm: int, limit_per_band: int) -> list[dict[str, Any]]:
-    cache_key = f"playlist:{bpm}:{limit_per_band}"
+def fetch_playlist_bands(bpm: int, limit_per_band: int, genre: str | None = None) -> list[dict[str, Any]]:
+    cache_key = f"playlist:{bpm}:{limit_per_band}:{genre or 'all'}"
     cached = get_cached(cache_key)
     if cached is not None:
         return cached
 
     bands: list[dict[str, Any]] = []
     for band in build_playlist_bands(bpm):
-        items = fetch_song_results(band["bpm"], limit_per_band)
+        items = fetch_song_results(band["bpm"], limit_per_band, genre)
         bands.append({**band, "items": items})
 
     set_cached(cache_key, bands)
     return bands
 
 
+def search_songs_by_text(q: str, bpm: int, limit: int, genre: str | None = None) -> list[dict[str, Any]]:
+    cache_key = f"text:{q.lower()}:{bpm}:{limit}:{genre or 'all'}"
+    cached = get_cached(cache_key)
+    if cached is not None:
+        return cached
+
+    value: list[dict[str, Any]] = []
+
+    response = getsong_request("/search/", {"type": "both", "lookup": q, "limit": limit * 3})
+    if response:
+        raw_items = response.get("search") or []
+        deduped: OrderedDict[str, dict[str, Any]] = OrderedDict()
+        for raw_item in raw_items:
+            if not isinstance(raw_item, dict):
+                continue
+            song = normalize_getsong_song(raw_item, bpm)
+            if song and matches_genre(song, genre) and song["id"] not in deduped:
+                deduped[song["id"]] = song
+            if len(deduped) >= limit:
+                break
+        value = list(deduped.values())
+
+    if not value:
+        deduped: OrderedDict[str, dict[str, Any]] = OrderedDict()
+        results = ytmusic.search(q, filter="songs", limit=limit)
+        for result in results:
+            song = normalize_ytmusic_song(result, bpm, q)
+            if song and song["videoId"] not in deduped:
+                deduped[song["videoId"]] = song
+        value = list(deduped.values())
+
+    set_cached(cache_key, value)
+    return value
+
+
 @app.get("/health")
 def health():
-    return {"ok": True}
+    return {
+        "ok": True,
+        "providers": {
+            "getsongbpm": bool(GETSONGBPM_API_KEY),
+            "ytmusicapi": True,
+        },
+    }
 
 
 @app.get("/search")
 def search_by_bpm(
-    bpm: int = Query(..., ge=120, le=220),
+    bpm: int = Query(..., ge=MIN_BPM, le=MAX_BPM),
     limit: int = Query(12, ge=1, le=25),
+    genre: str | None = Query(None),
 ):
-    return {"items": fetch_song_results(bpm, limit)}
+    return {"items": fetch_song_results(bpm, limit, genre)}
 
 
 @app.get("/playlist")
 def playlist_by_bpm(
-    bpm: int = Query(..., ge=120, le=220),
+    bpm: int = Query(..., ge=MIN_BPM, le=MAX_BPM),
     limit_per_band: int = Query(5, ge=1, le=10),
+    genre: str | None = Query(None),
 ):
-    return {"bands": fetch_playlist_bands(bpm, limit_per_band)}
+    return {"bands": fetch_playlist_bands(bpm, limit_per_band, genre)}
 
 
 @app.get("/search/text")
 def search_by_text(
     q: str = Query(..., min_length=2),
-    bpm: int = Query(170, ge=120, le=220),
+    bpm: int = Query(170, ge=MIN_BPM, le=MAX_BPM),
     limit: int = Query(12, ge=1, le=25),
+    genre: str | None = Query(None),
 ):
-    cache_key = f"text:{q.lower()}:{bpm}:{limit}"
-    cached = get_cached(cache_key)
-    if cached is not None:
-        return {"items": cached}
-
-    deduped: OrderedDict[str, dict[str, Any]] = OrderedDict()
-    results = ytmusic.search(q, filter="songs", limit=limit)
-
-    for result in results:
-        song = normalize_song(result, bpm, q)
-        if song and song["videoId"] not in deduped:
-            deduped[song["videoId"]] = song
-
-    value = list(deduped.values())
-    set_cached(cache_key, value)
-    return {"items": value}
+    return {"items": search_songs_by_text(q, bpm, limit, genre)}

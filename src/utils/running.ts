@@ -1,5 +1,10 @@
 import { AppSettings, Track } from '../types';
 
+export const MIN_CADENCE_BPM = 117;
+export const MAX_CADENCE_BPM = 208;
+export const RECOMMENDED_MIN_CADENCE_BPM = 160;
+export const RECOMMENDED_MAX_CADENCE_BPM = 180;
+
 export const DEFAULT_SETTINGS: AppSettings = {
   heightCm: 176,
   strideMeters: 1.02,
@@ -49,7 +54,7 @@ export function estimateStrideFromHeight(heightCm: number) {
 
 export function cadenceFromPace(paceSec: number, strideMeters: number) {
   const metersPerMinute = 1000 / (paceSec / 60);
-  return Math.round(clamp(metersPerMinute / strideMeters, 150, 190));
+  return Math.round(clamp(metersPerMinute / strideMeters, MIN_CADENCE_BPM, MAX_CADENCE_BPM));
 }
 
 export function strideFor(speedKmh: number, cadence: number) {
@@ -62,8 +67,8 @@ export function effectiveStride(settings: AppSettings) {
 }
 
 export function getCadenceStatus(cadence: number) {
-  if (cadence < 160) return 'Mais econômica com passada curta';
-  if (cadence <= 180) return 'Faixa recomendada para corrida';
+  if (cadence < RECOMMENDED_MIN_CADENCE_BPM) return 'Mais econômica com passada curta';
+  if (cadence <= RECOMMENDED_MAX_CADENCE_BPM) return 'Faixa recomendada para corrida';
   return 'Alta rotação para tiros e ritmo forte';
 }
 

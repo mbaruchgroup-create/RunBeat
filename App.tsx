@@ -22,6 +22,10 @@ import { TRACKS } from './src/data/tracks';
 import { AppSettings, AppTab, InputMode, RemotePlaylistBand, RemoteSong, Track } from './src/types';
 import {
   DEFAULT_SETTINGS,
+  MAX_CADENCE_BPM,
+  MIN_CADENCE_BPM,
+  RECOMMENDED_MAX_CADENCE_BPM,
+  RECOMMENDED_MIN_CADENCE_BPM,
   cadenceFromPace,
   clamp,
   effectiveStride,
@@ -497,6 +501,9 @@ function RhythmScreen(props: {
           </View>
         </View>
         <Gauge cadence={props.cadence} onChange={props.onChangeCadence} />
+        <Text style={styles.metricHint}>
+          Faixa total {MIN_CADENCE_BPM}-{MAX_CADENCE_BPM} BPM · recomendado {RECOMMENDED_MIN_CADENCE_BPM}-{RECOMMENDED_MAX_CADENCE_BPM}
+        </Text>
         <View style={styles.rowBetween}>
           <Stat label="Passada" value={`${props.stride.toFixed(2)} m`} />
           <Stat label="Pace" value={`${formatPace(props.pace)} /km`} />
@@ -919,12 +926,16 @@ function Stat({ label, value, emphasis }: { label: string; value: string; emphas
 }
 
 function Gauge({ cadence, onChange }: { cadence: number; onChange: (value: number) => void }) {
-  const markers = [150, 160, 170, 180, 190];
+  const markers = [117, 140, 160, 180, 208];
+  const fillPercent = ((cadence - MIN_CADENCE_BPM) / (MAX_CADENCE_BPM - MIN_CADENCE_BPM)) * 100;
+  const recommendedLeft = ((RECOMMENDED_MIN_CADENCE_BPM - MIN_CADENCE_BPM) / (MAX_CADENCE_BPM - MIN_CADENCE_BPM)) * 100;
+  const recommendedWidth =
+    ((RECOMMENDED_MAX_CADENCE_BPM - RECOMMENDED_MIN_CADENCE_BPM) / (MAX_CADENCE_BPM - MIN_CADENCE_BPM)) * 100;
   return (
     <View style={styles.gauge}>
       <View style={styles.gaugeTrack}>
-        <View style={styles.gaugeRecommended} />
-        <View style={[styles.gaugeFill, { width: `${((cadence - 150) / 40) * 100}%` }]} />
+        <View style={[styles.gaugeRecommended, { left: `${recommendedLeft}%`, width: `${recommendedWidth}%` }]} />
+        <View style={[styles.gaugeFill, { width: `${fillPercent}%` }]} />
       </View>
       <View style={styles.rowBetween}>
         {markers.map((marker) => (

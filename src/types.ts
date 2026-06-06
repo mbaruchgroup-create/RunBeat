@@ -33,6 +33,7 @@ export type RemoteSong = {
   videoId: string;
   title: string;
   artists: string[];
+  genres?: string[];
   durationText?: string;
   album?: string;
   thumbnailUrl?: string;

@@ -44,6 +44,28 @@ Depois do deploy, copie a URL pública HTTPS do Railway e use essa URL no campo 
 - `GET /playlist?bpm=168`
 - `GET /search/text?q=tempo%20run&bpm=168`
 
+Agora o backend tenta usar o `GetSongBPM` como fonte principal de BPM e gênero, e cai para `ytmusicapi` como fallback.
+
+## Variáveis de ambiente
+
+- `GETSONGBPM_API_KEY`
+
+Cadastre a chave em:
+
+- https://getsongbpm.com/api
+
+Observação importante: a documentação do GetSongBPM exige backlink para o serviço no app ou store listing.
+
+## Filtro por gênero
+
+Os endpoints aceitam `genre`, por exemplo:
+
+```bash
+/search?bpm=168&genre=rock
+/playlist?bpm=168&genre=pop
+/search/text?q=too+sweet&bpm=117&genre=pop
+```
+
 ## Cache local
 
 As respostas ficam em `backend/.cache/ytmusic_cache.json` por 12 horas.
