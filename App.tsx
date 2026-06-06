@@ -100,6 +100,17 @@ export default function App() {
 
   const rankedTracks = useMemo(() => getAllTracksSorted(TRACKS, cadence), [cadence]);
   const presetSongs = useMemo(() => buildPresetSongs(TRACKS), []);
+  const bandSongs = useMemo(
+    () => remoteBands.flatMap((band) => band.items),
+    [remoteBands]
+  );
+  const allRemoteSongs = useMemo(() => {
+    const deduped = new Map<string, RemoteSong>();
+    [...remoteSongs, ...bandSongs].forEach((song) => {
+      deduped.set(song.id, song);
+    });
+    return [...deduped.values()];
+  }, [bandSongs, remoteSongs]);
   const suggestedTracks = useMemo(
     () => getSuggestedTracks(TRACKS, cadence, settings.tolerance),
     [cadence, settings.tolerance]
@@ -117,8 +128,8 @@ export default function App() {
     [cadence, presetSongs, selectedTrackId]
   );
   const selectedSong = useMemo(
-    () => remoteSongs.find((song) => song.id === selectedSongId) ?? remoteSongs[0] ?? selectedPresetSong,
-    [remoteSongs, selectedPresetSong, selectedSongId]
+    () => allRemoteSongs.find((song) => song.id === selectedSongId) ?? allRemoteSongs[0] ?? selectedPresetSong,
+    [allRemoteSongs, selectedPresetSong, selectedSongId]
   );
   const usingRemoteMusic = !!selectedSong;
 
@@ -129,15 +140,15 @@ export default function App() {
   }, [rankedTracks, selectedTrack]);
 
   useEffect(() => {
-    if (remoteSongs.length === 0) {
+    if (allRemoteSongs.length === 0) {
       setSelectedSongId(null);
       return;
     }
 
-    if (!selectedSongId || !remoteSongs.some((song) => song.id === selectedSongId)) {
-      setSelectedSongId(remoteSongs[0].id);
+    if (!selectedSongId || !allRemoteSongs.some((song) => song.id === selectedSongId)) {
+      setSelectedSongId(allRemoteSongs[0].id);
     }
-  }, [remoteSongs, selectedSongId]);
+  }, [allRemoteSongs, selectedSongId]);
 
   useEffect(() => {
     if (!running) return;
