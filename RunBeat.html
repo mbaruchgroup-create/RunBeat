@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>RunBeat — metrônomo de cadência</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet" />
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background:
+      radial-gradient(1200px 700px at 50% -10%, #2a2d33 0%, transparent 60%),
+      linear-gradient(180deg, #16181c, #0e1013);
+    min-height: 100vh;
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── theme tokens ─────────────────────────────────────── */
+  .rb-root {
+    --ui: 'Space Grotesk', system-ui, sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, monospace;
+    --music: oklch(0.82 0.14 205);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    font-family: var(--ui);
+    background: var(--bg);
+    color: var(--text);
+  }
+  .rb-root[data-theme="dark"] {
+    --bg: oklch(0.165 0.012 255);
+    --surface: oklch(0.205 0.014 255);
+    --surface-2: oklch(0.255 0.016 255);
+    --border: oklch(0.31 0.014 255);
+    --bar: oklch(0.185 0.012 255 / 0.85);
+    --text: oklch(0.97 0.005 255);
+    --text-dim: oklch(0.74 0.012 255);
+    --text-faint: oklch(0.56 0.012 255);
+  }
+  .rb-root[data-theme="light"] {
+    --bg: oklch(0.975 0.004 255);
+    --surface: oklch(1 0 0);
+    --surface-2: oklch(0.955 0.005 255);
+    --border: oklch(0.90 0.006 255);
+    --bar: oklch(1 0 0 / 0.85);
+    --text: oklch(0.24 0.012 260);
+    --text-dim: oklch(0.46 0.012 260);
+    --text-faint: oklch(0.62 0.01 260);
+  }
+
+  .rb-scroll {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-top: 50px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .rb-scroll::-webkit-scrollbar { width: 0; }
+
+  button { font-family: var(--ui); -webkit-tap-highlight-color: transparent; }
+
+  /* ── beat pulse ───────────────────────────────────────── */
+  .beat-pulse {
+    position: absolute;
+    inset: 30px;
+    border-radius: 50%;
+    border: 2px solid var(--accent);
+    animation: beatpop 0.46s ease-out forwards;
+    pointer-events: none;
+  }
+  @keyframes beatpop {
+    0%   { transform: scale(0.9);  opacity: 0.85; }
+    100% { transform: scale(1.32); opacity: 0; }
+  }
+
+  /* ── equalizer bars on cover art ──────────────────────── */
+  .eqbar {
+    height: 100%;
+    transform-origin: bottom;
+    animation: eq 0.5s ease-in-out infinite alternate;
+  }
+  @keyframes eq {
+    0%   { transform: scaleY(0.28); }
+    100% { transform: scaleY(1); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .beat-pulse, .eqbar { animation: none; }
+  }
+</style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <script type="text/babel" src="ios-frame.jsx"></script>
+  <script type="text/babel" src="tweaks-panel.jsx"></script>
+  <script type="text/babel" src="runbeat-audio.jsx"></script>
+  <script type="text/babel" src="runbeat-data.jsx"></script>
+  <script type="text/babel" src="runbeat-ui.jsx"></script>
+  <script type="text/babel" src="runbeat-screens.jsx"></script>
+  <script type="text/babel" src="runbeat-extra.jsx"></script>
+  <script type="text/babel" src="runbeat-app.jsx"></script>
+  <script type="text/babel">
+    ReactDOM.createRoot(document.getElementById('root')).render(<RunBeatApp />);
+  </script>
+</body>
+</html>
