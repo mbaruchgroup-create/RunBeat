@@ -811,14 +811,9 @@ function SettingsScreen(props: {
 
       <Card>
         <Text style={styles.cardLabel}>Backend YouTube Music</Text>
-        <TextField
-          label="URL do backend"
-          value={props.settings.backendUrl}
-          onChange={(value) => props.onChangeSettings('backendUrl', value)}
-          placeholder="http://192.168.0.10:8000"
-        />
+        <Text style={styles.metricHint}>Conectado automaticamente ao backend publico do RunBeat.</Text>
         <Text style={styles.metricHint}>
-          Use o IP do computador rodando o backend, por exemplo: http://192.168.0.10:8000
+          URL ativa: {props.settings.backendUrl}
         </Text>
       </Card>
 
@@ -1015,36 +1010,6 @@ function NumericField({
           style={styles.input}
         />
         <Text style={styles.inputSuffix}>{suffix}</Text>
-      </View>
-    </View>
-  );
-}
-
-function TextField({
-  label,
-  value,
-  onChange,
-  placeholder,
-}: {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  placeholder?: string;
-}) {
-  return (
-    <View style={styles.fieldRow}>
-      <Text style={styles.fieldLabel}>{label}</Text>
-      <View style={styles.inputShell}>
-        <TextInput
-          autoCapitalize="none"
-          autoCorrect={false}
-          keyboardType="url"
-          value={value}
-          onChangeText={onChange}
-          placeholder={placeholder}
-          placeholderTextColor="#67717C"
-          style={styles.input}
-        />
       </View>
     </View>
   );

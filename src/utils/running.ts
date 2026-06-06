@@ -8,7 +8,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   musicVolume: 0.5,
   tolerance: 4,
   autoDuck: true,
-  backendUrl: 'http://192.168.0.10:8000',
+  backendUrl: 'https://runbeat-production.up.railway.app',
 };
 
 export function clamp(value: number, min: number, max: number) {
