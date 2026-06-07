@@ -772,10 +772,12 @@ function RunScreen(props: {
             Treino ativo: {props.selectedTraining.name} Â· {props.selectedTraining.durationMinutes} min
           </Text>
         ) : null}
-        <Pressable onPress={props.onStart} style={styles.primaryButton}>
-          <Ionicons name="play" size={20} color="#0D1116" />
-          <Text style={styles.primaryButtonText}>Iniciar</Text>
-        </Pressable>
+        <View style={styles.startActions}>
+          <Pressable onPress={props.onStart} style={styles.primaryButton}>
+            <Ionicons name="play" size={20} color="#0D1116" />
+            <Text style={styles.primaryButtonText}>Corrida livre</Text>
+          </Pressable>
+        </View>
       </View>
     );
   }
@@ -790,8 +792,21 @@ function RunScreen(props: {
 
       {props.selectedTraining && props.activeTrainingSegment ? (
         <Card>
-          <Text style={styles.cardLabel}>Treino em andamento</Text>
-          <Text style={styles.metricHint}>{props.selectedTraining.name}</Text>
+          {(() => {
+            const training = props.selectedTraining!;
+            const segmentIndex = training.segments.findIndex((segment) => segment === props.activeTrainingSegment) + 1;
+            return (
+              <>
+          <View style={styles.rowBetween}>
+            <View style={styles.levelBadge}>
+              <View style={styles.levelDot} />
+              <Text style={styles.levelBadgeText}>{training.level}</Text>
+            </View>
+            <Text style={styles.metricHint}>
+              etapa {segmentIndex}/{training.segments.length}
+            </Text>
+          </View>
+          <Text style={styles.trackTitle}>{training.name}</Text>
           <View style={styles.rowBetween}>
             <Stat
               label="Segmento"
@@ -799,6 +814,23 @@ function RunScreen(props: {
             />
             <Stat label="Alvo" value={`${props.activeTrainingSegment.targetCadence} BPM`} />
           </View>
+          <View style={styles.trainingRangeBar}>
+            {training.segments.map((segment, index) => (
+              <View
+                key={`${training.id}-live-${index}`}
+                style={[
+                  styles.trainingRangeStep,
+                  {
+                    flex: Math.max(1, segment.minuteEnd - segment.minuteStart),
+                    opacity: segment === props.activeTrainingSegment ? 1 : 0.35,
+                  },
+                ]}
+              />
+            ))}
+          </View>
+              </>
+            );
+          })()}
         </Card>
       ) : null}
 
@@ -1331,18 +1363,26 @@ function SettingsScreen(props: {
 
       <Card>
         <Text style={styles.cardLabel}>Volumes</Text>
-        <VolumeRow
-          label="Metronomo"
-          value={props.settings.metronomeVolume}
-          icon="pulse-outline"
-          onChange={(value) => props.onChangeSettings('metronomeVolume', value)}
-        />
-        <VolumeRow
-          label="Musica"
-          value={props.settings.musicVolume}
-          icon="musical-notes-outline"
-          onChange={(value) => props.onChangeSettings('musicVolume', value)}
-        />
+        <View style={styles.mixerMeters}>
+          <MixerMeter
+            label="Musica"
+            sublabel="player"
+            color="#34D6E8"
+            value={props.settings.musicVolume}
+            icon="musical-notes-outline"
+            onChange={(value) => props.onChangeSettings('musicVolume', value)}
+            locked={props.settings.autoDuck}
+          />
+          <View style={styles.mixerDivider} />
+          <MixerMeter
+            label="Metronomo"
+            sublabel="pulso"
+            color="#C3FF3B"
+            value={props.settings.metronomeVolume}
+            icon="pulse-outline"
+            onChange={(value) => props.onChangeSettings('metronomeVolume', value)}
+          />
+        </View>
       </Card>
     </View>
   );
@@ -1544,6 +1584,58 @@ function VolumeRow({
   );
 }
 
+function MixerMeter({
+  label,
+  sublabel,
+  value,
+  color,
+  icon,
+  onChange,
+  locked,
+}: {
+  label: string;
+  sublabel: string;
+  value: number;
+  color: string;
+  icon: keyof typeof Ionicons.glyphMap;
+  onChange: (value: number) => void;
+  locked?: boolean;
+}) {
+  return (
+    <View style={styles.meterWrap}>
+      <View style={[styles.meterIconWrap, { backgroundColor: `${color}22` }]}>
+        <Ionicons name={icon} size={18} color={color} />
+      </View>
+      <View style={styles.meterRail}>
+        {[0.25, 0.5, 0.75].map((tick) => (
+          <View key={tick} style={[styles.meterTick, { bottom: `${tick * 100}%` }]} />
+        ))}
+        <View style={[styles.meterFill, { height: `${value * 100}%`, backgroundColor: color }]} />
+        <View style={[styles.meterKnob, { bottom: `${value * 100}%` }]}>
+          <View style={styles.meterKnobGrip} />
+          <View style={styles.meterKnobGrip} />
+          <View style={styles.meterKnobGrip} />
+        </View>
+        {locked ? <Text style={styles.meterLock}>L</Text> : null}
+      </View>
+      <View style={styles.meterButtons}>
+        <Pressable onPress={() => onChange(clamp(Number((value + 0.05).toFixed(2)), 0, 1))} style={styles.meterButton}>
+          <Text style={styles.volumeButtonText}>+</Text>
+        </Pressable>
+        <Pressable onPress={() => onChange(clamp(Number((value - 0.05).toFixed(2)), 0, 1))} style={styles.meterButton}>
+          <Text style={styles.volumeButtonText}>-</Text>
+        </Pressable>
+      </View>
+      <Text style={styles.meterValue}>
+        {Math.round(value * 100)}
+        <Text style={styles.meterUnit}>%</Text>
+      </Text>
+      <Text style={[styles.meterLabel, { color }]}>{label}</Text>
+      <Text style={styles.meterSubLabel}>{sublabel}</Text>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
@@ -1565,6 +1657,11 @@ const styles = StyleSheet.create({
     minHeight: 620,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  startActions: {
+    width: '100%',
+    maxWidth: 300,
+    marginTop: 8,
   },
   eyebrow: {
     color: '#C3FF3B',
@@ -1917,6 +2014,115 @@ const styles = StyleSheet.create({
   },
   volumeRow: {
     gap: 10,
+  },
+  mixerMeters: {
+    flexDirection: 'row',
+    minHeight: 260,
+    gap: 16,
+    alignItems: 'stretch',
+  },
+  mixerDivider: {
+    width: 1,
+    backgroundColor: '#222A32',
+  },
+  meterWrap: {
+    flex: 1,
+    alignItems: 'center',
+    gap: 10,
+  },
+  meterIconWrap: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  meterRail: {
+    width: 68,
+    flex: 1,
+    minHeight: 190,
+    borderRadius: 24,
+    backgroundColor: '#171D23',
+    borderWidth: 1,
+    borderColor: '#293038',
+    overflow: 'hidden',
+    position: 'relative',
+  },
+  meterTick: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    height: 1,
+    backgroundColor: '#2A3139',
+  },
+  meterFill: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  meterKnob: {
+    position: 'absolute',
+    left: '50%',
+    transform: [{ translateX: -28 }, { translateY: 13 }],
+    width: 56,
+    height: 26,
+    borderRadius: 10,
+    backgroundColor: '#13181D',
+    borderWidth: 1,
+    borderColor: '#2A3139',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 3,
+  },
+  meterKnobGrip: {
+    width: 10,
+    height: 2,
+    borderRadius: 99,
+    backgroundColor: '#6F7A84',
+  },
+  meterButtons: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  meterButton: {
+    width: 34,
+    height: 34,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#293038',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#191F25',
+  },
+  meterValue: {
+    color: '#F4F7FB',
+    fontSize: 22,
+    fontWeight: '700',
+  },
+  meterUnit: {
+    color: '#8A95A1',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  meterLabel: {
+    fontSize: 13,
+    fontWeight: '800',
+  },
+  meterSubLabel: {
+    color: '#6F7A84',
+    fontSize: 11,
+    marginTop: -6,
+  },
+  meterLock: {
+    position: 'absolute',
+    top: 8,
+    left: '50%',
+    transform: [{ translateX: -4 }],
+    color: '#F4F7FB',
+    fontSize: 10,
+    fontWeight: '800',
   },
   volumeLabelWrap: {
     flexDirection: 'row',
