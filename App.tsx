@@ -78,6 +78,7 @@ export default function App() {
   const [selectedGenre, setSelectedGenre] = useState<string>('all');
   const [embeddedPlayerUrl, setEmbeddedPlayerUrl] = useState<string | null>(null);
   const [embeddedPlayerTitle, setEmbeddedPlayerTitle] = useState<string>('RunBeat Player');
+  const [trainingSheetOpen, setTrainingSheetOpen] = useState(false);
 
   useEffect(() => {
     AsyncStorage.getItem(STORAGE_KEY)
@@ -453,6 +454,10 @@ export default function App() {
             onRefresh={() => void fetchTrainings()}
             onSelectTraining={setSelectedTrainingId}
             onStartTraining={startTraining}
+            onOpenDetails={(value) => {
+              setSelectedTrainingId(value);
+              setTrainingSheetOpen(true);
+            }}
           />
         );
       case 'mixer':
@@ -524,6 +529,22 @@ export default function App() {
           </View>
           {embeddedPlayerUrl ? <WebView source={{ uri: embeddedPlayerUrl }} style={styles.playerWebView} /> : null}
         </SafeAreaView>
+      </Modal>
+      <Modal visible={trainingSheetOpen} animationType="slide" transparent onRequestClose={() => setTrainingSheetOpen(false)}>
+        <Pressable style={styles.sheetBackdrop} onPress={() => setTrainingSheetOpen(false)}>
+          <Pressable style={styles.sheet} onPress={() => undefined}>
+            {selectedTraining ? (
+              <TrainingDetailSheet
+                training={selectedTraining}
+                onClose={() => setTrainingSheetOpen(false)}
+                onStart={() => {
+                  setTrainingSheetOpen(false);
+                  startTraining(selectedTraining.id);
+                }}
+              />
+            ) : null}
+          </Pressable>
+        </Pressable>
       </Modal>
     </SafeAreaView>
   );
@@ -890,11 +911,15 @@ function TracksScreen(props: {
   onSelectTrack: (value: string) => void;
 }) {
   const allSongs = [...props.remoteSongs, ...props.remoteBands.flatMap((band) => band.items)];
+  const [showAll, setShowAll] = useState(false);
   const genreOptions = ['all', 'pop', 'rock', 'hip hop', 'electronic', 'metal'];
+  const visibleSongs = showAll
+    ? props.remoteSongs
+    : props.remoteSongs.filter((song) => Math.abs((song.cadenceTarget ?? song.effectiveBpm ?? song.bpmHint) - props.cadence) <= props.tolerance);
   return (
     <View style={styles.screen}>
-      <Text style={styles.title}>Musicas por BPM</Text>
-      <Text style={styles.subtitle}>O catalogo principal agora prioriza sua lista curada por BPM e complementa com busca real.</Text>
+      <Text style={styles.title}>Musicas</Text>
+      <Text style={styles.subtitle}>Catalogo curado por BPM com apoio do YouTube Music e player dentro do RunBeat.</Text>
 
       <Card>
         <View style={styles.rowBetween}>
@@ -932,6 +957,13 @@ function TracksScreen(props: {
         </View>
       </Card>
 
+      <View style={styles.rowBetween}>
+        <Text style={styles.listHeading}>{showAll ? 'TODAS AS FAIXAS' : `NO SEU RITMO · ${visibleSongs.length}`}</Text>
+        <Pressable onPress={() => setShowAll((current) => !current)}>
+          <Text style={styles.linkAccent}>{showAll ? 'So no ritmo' : 'Ver todas'}</Text>
+        </Pressable>
+      </View>
+
       <Card>
         <Text style={styles.cardLabel}>Catalogo principal</Text>
         {props.isFetchingSongs ? (
@@ -941,7 +973,7 @@ function TracksScreen(props: {
           </View>
         ) : null}
         {props.songsError ? <Text style={styles.errorText}>{props.songsError}</Text> : null}
-        {props.remoteSongs.map((song) => (
+        {visibleSongs.map((song) => (
           <Pressable
             key={song.id}
             onPress={() => props.onSelectSong(song.id)}
@@ -950,7 +982,7 @@ function TracksScreen(props: {
             <RemoteSongRow song={song} active={song.id === props.selectedSongId} />
           </Pressable>
         ))}
-        {!props.isFetchingSongs && props.remoteSongs.length === 0 ? (
+        {!props.isFetchingSongs && visibleSongs.length === 0 ? (
           <Text style={styles.emptyText}>Sem resultados do catalogo agora. O app continua com sugestoes pre-configuradas como fallback.</Text>
         ) : null}
         {props.selectedSongId ? (
@@ -1029,6 +1061,7 @@ function TrainingsScreen(props: {
   onRefresh: () => void;
   onSelectTraining: (value: string) => void;
   onStartTraining: (value: string) => void;
+  onOpenDetails: (value: string) => void;
 }) {
   const selectedTraining = props.trainings.find((training) => training.id === props.selectedTrainingId) ?? null;
   const selectedRange = selectedTraining
@@ -1075,7 +1108,10 @@ function TrainingsScreen(props: {
         {props.trainings.map((training) => (
           <Pressable
             key={training.id}
-            onPress={() => props.onSelectTraining(training.id)}
+            onPress={() => {
+              props.onSelectTraining(training.id);
+              props.onOpenDetails(training.id);
+            }}
             style={[styles.trainingCard, props.selectedTrainingId === training.id && styles.trainingCardActive]}
           >
             <View style={styles.rowBetween}>
@@ -1139,6 +1175,85 @@ function TrainingsScreen(props: {
           </Pressable>
         </Card>
       ) : null}
+    </View>
+  );
+}
+
+function TrainingDetailSheet(props: {
+  training: TrainingPlan;
+  onClose: () => void;
+  onStart: () => void;
+}) {
+  const range = {
+    min: Math.min(...props.training.segments.map((segment) => segment.targetCadence)),
+    max: Math.max(...props.training.segments.map((segment) => segment.targetCadence)),
+  };
+
+  return (
+    <View style={styles.sheetContent}>
+      <View style={styles.sheetHandle} />
+      <View style={styles.rowBetween}>
+        <View style={styles.levelBadge}>
+          <View style={styles.levelDot} />
+          <Text style={styles.levelBadgeText}>{props.training.level}</Text>
+        </View>
+        <Pressable onPress={props.onClose} style={styles.playerCloseButton}>
+          <Ionicons name="close" size={20} color="#F4F7FB" />
+        </Pressable>
+      </View>
+      <Text style={styles.sheetTitle}>{props.training.name}</Text>
+      <Text style={styles.subtitle}>
+        {props.training.tagline ?? 'Treino progressivo para subir a cadencia em etapas com controle.'}
+      </Text>
+
+      <Card>
+        <View style={styles.rowBetween}>
+          <Stat label="Duracao" value={`${props.training.durationMinutes} min`} />
+          <Stat label="Cadencia" value={`${range.min}-${range.max}`} />
+          <Stat label="Etapas" value={`${props.training.segments.length}`} />
+        </View>
+      </Card>
+
+      {props.training.goals && props.training.goals.length > 0 ? (
+        <Card>
+          <Text style={styles.cardLabel}>Objetivos</Text>
+          <View style={styles.trainingGoals}>
+            {props.training.goals.map((goal) => (
+              <View key={goal} style={styles.trainingGoalRow}>
+                <Ionicons name="checkmark-circle" size={16} color="#C3FF3B" />
+                <Text style={styles.trainingGoalText}>{goal}</Text>
+              </View>
+            ))}
+          </View>
+        </Card>
+      ) : null}
+
+      <Card>
+        <Text style={styles.cardLabel}>Progressao por etapa</Text>
+        <View style={styles.trainingSegmentsColumn}>
+          {props.training.segments.map((segment, index) => (
+            <View key={`${props.training.id}-detail-${index}`} style={styles.trainingSegmentDetailRow}>
+              <Text style={styles.trainingSegmentTime}>
+                {segment.minuteStart}-{segment.minuteEnd} min
+              </Text>
+              <View style={styles.trainingSegmentDetailTrack}>
+                <View
+                  style={[
+                    styles.trainingSegmentDetailFill,
+                    { width: `${((segment.targetCadence - 135) / (195 - 135)) * 100}%` },
+                  ]}
+                />
+              </View>
+              <Text style={styles.trainingSegmentCadence}>{segment.targetCadence}</Text>
+            </View>
+          ))}
+        </View>
+      </Card>
+
+      <Pressable onPress={props.onStart} style={styles.primaryButton}>
+        <Ionicons name="play" size={20} color="#0D1116" />
+        <Text style={styles.primaryButtonText}>Iniciar treino</Text>
+      </Pressable>
     </View>
   );
 }
@@ -1920,6 +2035,17 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '800',
   },
+  listHeading: {
+    color: '#95A0AB',
+    fontSize: 13,
+    fontWeight: '800',
+    letterSpacing: 0.3,
+  },
+  linkAccent: {
+    color: '#C3FF3B',
+    fontSize: 13,
+    fontWeight: '800',
+  },
   trainingCard: {
     gap: 10,
     paddingVertical: 10,
@@ -1973,6 +2099,39 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
     flex: 1,
+  },
+  trainingSegmentsColumn: {
+    gap: 10,
+  },
+  trainingSegmentDetailRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  trainingSegmentTime: {
+    minWidth: 72,
+    color: '#95A0AB',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  trainingSegmentDetailTrack: {
+    flex: 1,
+    height: 8,
+    borderRadius: 999,
+    backgroundColor: '#232A32',
+    overflow: 'hidden',
+  },
+  trainingSegmentDetailFill: {
+    height: '100%',
+    borderRadius: 999,
+    backgroundColor: '#C3FF3B',
+  },
+  trainingSegmentCadence: {
+    width: 42,
+    textAlign: 'right',
+    color: '#F4F7FB',
+    fontSize: 14,
+    fontWeight: '800',
   },
   fieldRow: {
     gap: 8,
@@ -2077,5 +2236,61 @@ const styles = StyleSheet.create({
   playerWebView: {
     flex: 1,
     backgroundColor: '#0B0F13',
+  },
+  sheetBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.55)',
+    justifyContent: 'flex-end',
+  },
+  sheet: {
+    maxHeight: '90%',
+    backgroundColor: '#0B0F13',
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    borderTopWidth: 1,
+    borderTopColor: '#222A32',
+    overflow: 'hidden',
+  },
+  sheetContent: {
+    paddingHorizontal: 22,
+    paddingTop: 10,
+    paddingBottom: 28,
+    gap: 16,
+  },
+  sheetHandle: {
+    alignSelf: 'center',
+    width: 42,
+    height: 5,
+    borderRadius: 999,
+    backgroundColor: '#2A3139',
+    marginBottom: 4,
+  },
+  sheetTitle: {
+    color: '#F4F7FB',
+    fontSize: 28,
+    fontWeight: '800',
+    letterSpacing: -0.6,
+  },
+  levelBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 999,
+    backgroundColor: 'rgba(195, 255, 59, 0.12)',
+  },
+  levelDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 999,
+    backgroundColor: '#C3FF3B',
+  },
+  levelBadgeText: {
+    color: '#C3FF3B',
+    fontSize: 11,
+    fontWeight: '800',
+    textTransform: 'uppercase',
+    letterSpacing: 0.4,
   },
 });
