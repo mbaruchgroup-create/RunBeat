@@ -4,6 +4,12 @@
     "name": "Primeiros 5km",
     "level": "beginner",
     "durationMinutes": 30,
+    "tagline": "Construa consistencia e aprenda a correr na cadencia certa.",
+    "goals": [
+      "Criar consistencia",
+      "Melhorar condicionamento",
+      "Aprender a correr na cadencia"
+    ],
     "segments": [
       {
         "minuteStart": 0,
@@ -32,6 +38,12 @@
     "name": "Quebra dos 30",
     "level": "intermediate",
     "durationMinutes": 40,
+    "tagline": "Sustente cadencias maiores e empurre o pace com controle.",
+    "goals": [
+      "Melhorar pace",
+      "Construir resistencia",
+      "Sustentar cadencias maiores"
+    ],
     "segments": [
       {
         "minuteStart": 0,
@@ -65,6 +77,12 @@
     "name": "RunBeat Beast Mode",
     "level": "advanced",
     "durationMinutes": 45,
+    "tagline": "Ritmo forte, velocidade e performance no limite.",
+    "goals": [
+      "Performance",
+      "Velocidade",
+      "Ritmo forte"
+    ],
     "segments": [
       {
         "minuteStart": 0,

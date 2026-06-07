@@ -73,4 +73,6 @@ export type TrainingPlan = {
   level: 'beginner' | 'intermediate' | 'advanced';
   durationMinutes: number;
   segments: TrainingSegment[];
+  tagline?: string;
+  goals?: string[];
 };

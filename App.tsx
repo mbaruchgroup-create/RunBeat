@@ -212,7 +212,8 @@ export default function App() {
         ),
       ]);
 
-      if (!catalogResponse.ok) {
+      const canUseCatalog = catalogResponse.ok;
+      if (!canUseCatalog && catalogResponse.status !== 404) {
         throw new Error(`Catalogo respondeu ${catalogResponse.status}`);
       }
 
@@ -224,7 +225,7 @@ export default function App() {
         throw new Error(`Busca respondeu ${searchResponse.status}`);
       }
 
-      const catalogData = (await catalogResponse.json()) as { items?: RemoteSong[] };
+      const catalogData = canUseCatalog ? ((await catalogResponse.json()) as { items?: RemoteSong[] }) : { items: [] };
       const playlistData = (await playlistResponse.json()) as { bands?: RemotePlaylistBand[] };
       const searchData = (await searchResponse.json()) as { items?: RemoteSong[] };
       const catalogItems = Array.isArray(catalogData.items) ? catalogData.items : [];
@@ -241,6 +242,8 @@ export default function App() {
 
       if (items.length === 0) {
         setSongsError('O backend respondeu, mas ainda nao encontrou musicas para esse BPM.');
+      } else if (!canUseCatalog) {
+        setSongsError('Catalogo ainda nao disponivel nesta build do backend. Usando busca complementar.');
       }
     } catch (error) {
       setRemoteSongs([]);
@@ -315,6 +318,16 @@ export default function App() {
   };
 
   const startRun = () => {
+    setStarted(true);
+    setRunning(true);
+    setTab('correr');
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => undefined);
+  };
+
+  const startTraining = (trainingId: string) => {
+    setSelectedTrainingId(trainingId);
+    setElapsed(0);
+    setDistanceKm(0);
     setStarted(true);
     setRunning(true);
     setTab('correr');
@@ -422,6 +435,7 @@ export default function App() {
             currentSegment={activeTrainingSegment}
             onRefresh={() => void fetchTrainings()}
             onSelectTraining={setSelectedTrainingId}
+            onStartTraining={startTraining}
           />
         );
       case 'config':
@@ -946,11 +960,20 @@ function TrainingsScreen(props: {
   currentSegment: TrainingPlan['segments'][number] | null;
   onRefresh: () => void;
   onSelectTraining: (value: string) => void;
+  onStartTraining: (value: string) => void;
 }) {
+  const selectedTraining = props.trainings.find((training) => training.id === props.selectedTrainingId) ?? null;
+  const selectedRange = selectedTraining
+    ? {
+        min: Math.min(...selectedTraining.segments.map((segment) => segment.targetCadence)),
+        max: Math.max(...selectedTraining.segments.map((segment) => segment.targetCadence)),
+      }
+    : null;
+
   return (
     <View style={styles.screen}>
-      <Text style={styles.title}>Treinos progressivos</Text>
-      <Text style={styles.subtitle}>Escolha um plano e o RunBeat ajusta a cadencia alvo por segmentos.</Text>
+      <Text style={styles.title}>Treinos</Text>
+      <Text style={styles.subtitle}>Programas progressivos: a cadencia sobe em etapas e a musica acompanha o seu ritmo.</Text>
 
       <Card>
         <View style={styles.rowBetween}>
@@ -996,6 +1019,14 @@ function TrainingsScreen(props: {
               </View>
               <Text style={styles.bandBpm}>{training.segments[0]?.targetCadence ?? '--'} BPM</Text>
             </View>
+            <View style={styles.trainingRangeBar}>
+              {training.segments.map((segment, index) => (
+                <View
+                  key={`${training.id}-bar-${index}`}
+                  style={[styles.trainingRangeStep, { flex: Math.max(1, segment.minuteEnd - segment.minuteStart) }]}
+                />
+              ))}
+            </View>
             <View style={styles.trainingSegments}>
               {training.segments.map((segment, index) => (
                 <View key={`${training.id}-${index}`} style={styles.trainingSegmentPill}>
@@ -1011,6 +1042,35 @@ function TrainingsScreen(props: {
           <Text style={styles.emptyText}>Nenhum treino progressivo encontrado no backend.</Text>
         ) : null}
       </Card>
+
+      {selectedTraining && selectedRange ? (
+        <Card>
+          <Text style={styles.cardLabel}>{selectedTraining.name}</Text>
+          <Text style={styles.metricHint}>
+            {selectedTraining.tagline ??
+              'Treino progressivo para subir a cadencia com consistencia e controle durante a corrida.'}
+          </Text>
+          <View style={styles.rowBetween}>
+            <Stat label="Duracao" value={`${selectedTraining.durationMinutes} min`} />
+            <Stat label="Cadencia" value={`${selectedRange.min}-${selectedRange.max}`} />
+            <Stat label="Etapas" value={`${selectedTraining.segments.length}`} />
+          </View>
+          {selectedTraining.goals && selectedTraining.goals.length > 0 ? (
+            <View style={styles.trainingGoals}>
+              {selectedTraining.goals.map((goal) => (
+                <View key={goal} style={styles.trainingGoalRow}>
+                  <Ionicons name="checkmark-circle" size={16} color="#C3FF3B" />
+                  <Text style={styles.trainingGoalText}>{goal}</Text>
+                </View>
+              ))}
+            </View>
+          ) : null}
+          <Pressable onPress={() => props.onStartTraining(selectedTraining.id)} style={styles.primaryButton}>
+            <Ionicons name="play" size={20} color="#0D1116" />
+            <Text style={styles.primaryButtonText}>Iniciar treino</Text>
+          </Pressable>
+        </Card>
+      ) : null}
     </View>
   );
 }
@@ -1803,6 +1863,15 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: 8,
   },
+  trainingRangeBar: {
+    flexDirection: 'row',
+    gap: 4,
+    height: 8,
+  },
+  trainingRangeStep: {
+    borderRadius: 999,
+    backgroundColor: 'rgba(195, 255, 59, 0.38)',
+  },
   trainingSegmentPill: {
     paddingHorizontal: 10,
     paddingVertical: 6,
@@ -1815,6 +1884,22 @@ const styles = StyleSheet.create({
     color: '#BFC8D2',
     fontSize: 12,
     fontWeight: '700',
+  },
+  trainingGoals: {
+    gap: 8,
+    marginTop: 12,
+    marginBottom: 14,
+  },
+  trainingGoalRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  trainingGoalText: {
+    color: '#D9E1E9',
+    fontSize: 14,
+    lineHeight: 20,
+    flex: 1,
   },
   fieldRow: {
     gap: 8,
