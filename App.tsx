@@ -19,7 +19,7 @@ import {
 
 import { useRunBeatAudio } from './src/audio/useRunBeatAudio';
 import { TRACKS } from './src/data/tracks';
-import { AppSettings, AppTab, InputMode, RemotePlaylistBand, RemoteSong, Track } from './src/types';
+import { AppSettings, AppTab, InputMode, RemotePlaylistBand, RemoteSong, Track, TrainingPlan } from './src/types';
 import {
   DEFAULT_SETTINGS,
   MAX_CADENCE_BPM,
@@ -64,6 +64,10 @@ export default function App() {
   const [remoteBands, setRemoteBands] = useState<RemotePlaylistBand[]>([]);
   const [isFetchingSongs, setIsFetchingSongs] = useState(false);
   const [songsError, setSongsError] = useState<string | null>(null);
+  const [trainings, setTrainings] = useState<TrainingPlan[]>([]);
+  const [isFetchingTrainings, setIsFetchingTrainings] = useState(false);
+  const [trainingsError, setTrainingsError] = useState<string | null>(null);
+  const [selectedTrainingId, setSelectedTrainingId] = useState<string | null>(null);
   const [running, setRunning] = useState(false);
   const [started, setStarted] = useState(false);
   const [musicEnabled, setMusicEnabled] = useState(true);
@@ -95,7 +99,23 @@ export default function App() {
   const suggestedStride = useMemo(() => estimateStrideFromHeight(settings.heightCm), [settings.heightCm]);
   const runnerStride = useMemo(() => effectiveStride(settings), [settings]);
   const autoCadence = useMemo(() => cadenceFromPace(effectivePace, runnerStride), [effectivePace, runnerStride]);
-  const cadence = cadenceOverride ?? autoCadence;
+  const selectedTraining = useMemo(
+    () => trainings.find((training) => training.id === selectedTrainingId) ?? null,
+    [selectedTrainingId, trainings]
+  );
+  const activeTrainingSegment = useMemo(() => {
+    if (!selectedTraining) return null;
+    const elapsedMinutes = elapsed / 60;
+    return (
+      selectedTraining.segments.find(
+        (segment) => elapsedMinutes >= segment.minuteStart && elapsedMinutes < segment.minuteEnd
+      ) ?? selectedTraining.segments[selectedTraining.segments.length - 1] ?? null
+    );
+  }, [elapsed, selectedTraining]);
+  const trainingCadence = selectedTraining
+    ? activeTrainingSegment?.targetCadence ?? selectedTraining.segments[0]?.targetCadence ?? null
+    : null;
+  const cadence = cadenceOverride ?? trainingCadence ?? autoCadence;
   const liveStride = useMemo(() => strideFor(effectiveSpeed, cadence), [cadence, effectiveSpeed]);
   const backendUrl = useMemo(() => normalizeBackendUrl(settings.backendUrl), [settings.backendUrl]);
 
@@ -231,6 +251,37 @@ export default function App() {
     }
   }
 
+  async function fetchTrainings() {
+    if (!backendUrl) {
+      setTrainingsError('Backend indisponivel para carregar os treinos.');
+      setTrainings([]);
+      return;
+    }
+
+    setIsFetchingTrainings(true);
+    setTrainingsError(null);
+
+    try {
+      const response = await fetch(`${backendUrl}/trainings`);
+      if (!response.ok) {
+        throw new Error(`Treinos responderam ${response.status}`);
+      }
+
+      const data = (await response.json()) as { items?: TrainingPlan[] };
+      const items = Array.isArray(data.items) ? data.items : [];
+      setTrainings(items);
+
+      if (items.length > 0 && !selectedTrainingId) {
+        setSelectedTrainingId(items[0].id);
+      }
+    } catch (error) {
+      setTrainings([]);
+      setTrainingsError(error instanceof Error ? error.message : 'Falha ao buscar treinos.');
+    } finally {
+      setIsFetchingTrainings(false);
+    }
+  }
+
   useEffect(() => {
     if (!backendUrl) return;
     const timer = setTimeout(() => {
@@ -239,6 +290,11 @@ export default function App() {
 
     return () => clearTimeout(timer);
   }, [backendUrl, cadence, selectedGenre, settings.tolerance]);
+
+  useEffect(() => {
+    if (!backendUrl) return;
+    void fetchTrainings();
+  }, [backendUrl]);
 
   useRunBeatAudio({
     cadence,
@@ -312,6 +368,8 @@ export default function App() {
             running={running}
             started={started}
             currentFoot={currentFoot}
+            selectedTraining={selectedTraining}
+            activeTrainingSegment={activeTrainingSegment}
             onStart={startRun}
             onPause={() => setRunning(false)}
             onResume={() => setRunning(true)}
@@ -353,6 +411,19 @@ export default function App() {
             onSelectTrack={setSelectedTrackId}
           />
         );
+      case 'treinos':
+        return (
+          <TrainingsScreen
+            trainings={trainings}
+            selectedTrainingId={selectedTrainingId}
+            isFetchingTrainings={isFetchingTrainings}
+            trainingsError={trainingsError}
+            currentCadence={cadence}
+            currentSegment={activeTrainingSegment}
+            onRefresh={() => void fetchTrainings()}
+            onSelectTraining={setSelectedTrainingId}
+          />
+        );
       case 'config':
         return (
           <SettingsScreen
@@ -377,6 +448,8 @@ export default function App() {
             onChangeGoalTime={setGoalTimeSec}
             cadence={cadence}
             autoCadence={autoCadence}
+            trainingCadence={trainingCadence}
+            selectedTraining={selectedTraining}
             onChangeCadence={(value) => setCadenceOverride(value)}
             onResetCadence={() => setCadenceOverride(null)}
             pace={effectivePace}
@@ -401,6 +474,7 @@ export default function App() {
           <TabButton label="Ritmo" tab="ritmo" current={tab} icon="speedometer-outline" onPress={setTab} />
           <TabButton label="Correr" tab="correr" current={tab} icon="pulse-outline" onPress={setTab} />
           <TabButton label="Musicas" tab="musicas" current={tab} icon="musical-notes-outline" onPress={setTab} />
+          <TabButton label="Treinos" tab="treinos" current={tab} icon="fitness-outline" onPress={setTab} />
           <TabButton label="Config" tab="config" current={tab} icon="options-outline" onPress={setTab} />
         </View>
       </View>
@@ -443,6 +517,8 @@ function RhythmScreen(props: {
   onChangeGoalTime: (value: number) => void;
   cadence: number;
   autoCadence: number;
+  trainingCadence: number | null;
+  selectedTraining: TrainingPlan | null;
   onChangeCadence: (value: number) => void;
   onResetCadence: () => void;
   pace: number;
@@ -536,7 +612,11 @@ function RhythmScreen(props: {
               {props.cadence}
               <Text style={styles.metricUnit}> BPM</Text>
             </Text>
-            <Text style={styles.metricHint}>auto {props.autoCadence} BPM</Text>
+            <Text style={styles.metricHint}>
+              {props.selectedTraining && props.trainingCadence
+                ? `${props.selectedTraining.name} · alvo ${props.trainingCadence} BPM`
+                : `auto ${props.autoCadence} BPM`}
+            </Text>
           </View>
         </View>
         <Gauge cadence={props.cadence} onChange={props.onChangeCadence} />
@@ -584,6 +664,8 @@ function RunScreen(props: {
   running: boolean;
   started: boolean;
   currentFoot: string;
+  selectedTraining: TrainingPlan | null;
+  activeTrainingSegment: TrainingPlan['segments'][number] | null;
   onStart: () => void;
   onPause: () => void;
   onResume: () => void;
@@ -610,6 +692,11 @@ function RunScreen(props: {
         <Text style={styles.subtitle}>
           Cadencia {props.cadence} BPM · pace {formatPace(props.pace)} /km
         </Text>
+        {props.selectedTraining ? (
+          <Text style={styles.metricHint}>
+            Treino ativo: {props.selectedTraining.name} Â· {props.selectedTraining.durationMinutes} min
+          </Text>
+        ) : null}
         <Pressable onPress={props.onStart} style={styles.primaryButton}>
           <Ionicons name="play" size={20} color="#0D1116" />
           <Text style={styles.primaryButtonText}>Iniciar</Text>
@@ -625,6 +712,20 @@ function RunScreen(props: {
         <Stat label="Distancia" value={`${props.distanceKm.toFixed(2)} km`} emphasis />
         <Stat label="Pace" value={`${formatPace(props.pace)} /km`} emphasis />
       </View>
+
+      {props.selectedTraining && props.activeTrainingSegment ? (
+        <Card>
+          <Text style={styles.cardLabel}>Treino em andamento</Text>
+          <Text style={styles.metricHint}>{props.selectedTraining.name}</Text>
+          <View style={styles.rowBetween}>
+            <Stat
+              label="Segmento"
+              value={`${props.activeTrainingSegment.minuteStart}-${props.activeTrainingSegment.minuteEnd} min`}
+            />
+            <Stat label="Alvo" value={`${props.activeTrainingSegment.targetCadence} BPM`} />
+          </View>
+        </Card>
+      ) : null}
 
       <View style={styles.beatShell}>
         <View style={[styles.beatCore, props.running && styles.beatCoreActive]}>
@@ -831,6 +932,84 @@ function TracksScreen(props: {
               <RemoteSongRow song={song} active={song.id === props.selectedSongId} />
             </Pressable>
           ))}
+      </Card>
+    </View>
+  );
+}
+
+function TrainingsScreen(props: {
+  trainings: TrainingPlan[];
+  selectedTrainingId: string | null;
+  isFetchingTrainings: boolean;
+  trainingsError: string | null;
+  currentCadence: number;
+  currentSegment: TrainingPlan['segments'][number] | null;
+  onRefresh: () => void;
+  onSelectTraining: (value: string) => void;
+}) {
+  return (
+    <View style={styles.screen}>
+      <Text style={styles.title}>Treinos progressivos</Text>
+      <Text style={styles.subtitle}>Escolha um plano e o RunBeat ajusta a cadencia alvo por segmentos.</Text>
+
+      <Card>
+        <View style={styles.rowBetween}>
+          <View>
+            <Text style={styles.cardLabel}>Cadencia atual</Text>
+            <Text style={[styles.metricValue, { color: '#C3FF3B' }]}>{props.currentCadence} BPM</Text>
+          </View>
+          <Pressable onPress={props.onRefresh} style={styles.secondaryButtonCompact}>
+            <Text style={styles.secondaryButtonText}>Atualizar treinos</Text>
+          </Pressable>
+        </View>
+        {props.currentSegment ? (
+          <Text style={styles.metricHint}>
+            Segmento ativo: {props.currentSegment.minuteStart}-{props.currentSegment.minuteEnd} min · alvo{' '}
+            {props.currentSegment.targetCadence} BPM
+          </Text>
+        ) : (
+          <Text style={styles.metricHint}>Selecione um treino para guiar a corrida por cadencia.</Text>
+        )}
+      </Card>
+
+      <Card>
+        <Text style={styles.cardLabel}>Planos disponiveis</Text>
+        {props.isFetchingTrainings ? (
+          <View style={styles.loadingRow}>
+            <ActivityIndicator color="#C3FF3B" />
+            <Text style={styles.metricHint}>Carregando treinos...</Text>
+          </View>
+        ) : null}
+        {props.trainingsError ? <Text style={styles.errorText}>{props.trainingsError}</Text> : null}
+        {props.trainings.map((training) => (
+          <Pressable
+            key={training.id}
+            onPress={() => props.onSelectTraining(training.id)}
+            style={[styles.trainingCard, props.selectedTrainingId === training.id && styles.trainingCardActive]}
+          >
+            <View style={styles.rowBetween}>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.trackTitle}>{training.name}</Text>
+                <Text style={styles.trackArtist}>
+                  {training.level} · {training.durationMinutes} min · {training.segments.length} segmentos
+                </Text>
+              </View>
+              <Text style={styles.bandBpm}>{training.segments[0]?.targetCadence ?? '--'} BPM</Text>
+            </View>
+            <View style={styles.trainingSegments}>
+              {training.segments.map((segment, index) => (
+                <View key={`${training.id}-${index}`} style={styles.trainingSegmentPill}>
+                  <Text style={styles.trainingSegmentText}>
+                    {segment.minuteStart}-{segment.minuteEnd} · {segment.targetCadence}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          </Pressable>
+        ))}
+        {!props.isFetchingTrainings && props.trainings.length === 0 ? (
+          <Text style={styles.emptyText}>Nenhum treino progressivo encontrado no backend.</Text>
+        ) : null}
       </Card>
     </View>
   );
@@ -1607,6 +1786,35 @@ const styles = StyleSheet.create({
     color: '#C3FF3B',
     fontSize: 14,
     fontWeight: '800',
+  },
+  trainingCard: {
+    gap: 10,
+    paddingVertical: 10,
+    borderTopWidth: 1,
+    borderTopColor: '#222A31',
+  },
+  trainingCardActive: {
+    backgroundColor: 'rgba(195, 255, 59, 0.06)',
+    borderRadius: 14,
+    paddingHorizontal: 10,
+  },
+  trainingSegments: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  trainingSegmentPill: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: '#2B333A',
+    backgroundColor: '#12171C',
+  },
+  trainingSegmentText: {
+    color: '#BFC8D2',
+    fontSize: 12,
+    fontWeight: '700',
   },
   fieldRow: {
     gap: 8,
