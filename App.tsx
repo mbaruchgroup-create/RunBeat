@@ -174,9 +174,9 @@ export default function App() {
     setSongsError(null);
 
     try {
-      const [searchResponse, playlistResponse] = await Promise.all([
+      const [catalogResponse, playlistResponse, searchResponse] = await Promise.all([
         fetch(
-          `${backendUrl}/search?bpm=${encodeURIComponent(cadence)}&limit=12&tolerance=${encodeURIComponent(
+          `${backendUrl}/catalog?bpm=${encodeURIComponent(cadence)}&limit=12&tolerance=${encodeURIComponent(
             Math.max(settings.tolerance, 8)
           )}${selectedGenre !== 'all' ? `&genre=${encodeURIComponent(selectedGenre)}` : ''}`
         ),
@@ -185,25 +185,42 @@ export default function App() {
             Math.max(settings.tolerance, 8)
           )}${selectedGenre !== 'all' ? `&genre=${encodeURIComponent(selectedGenre)}` : ''}`
         ),
+        fetch(
+          `${backendUrl}/search?bpm=${encodeURIComponent(cadence)}&limit=8&tolerance=${encodeURIComponent(
+            Math.max(settings.tolerance, 8)
+          )}${selectedGenre !== 'all' ? `&genre=${encodeURIComponent(selectedGenre)}` : ''}`
+        ),
       ]);
 
-      if (!searchResponse.ok) {
-        throw new Error(`Busca respondeu ${searchResponse.status}`);
+      if (!catalogResponse.ok) {
+        throw new Error(`Catalogo respondeu ${catalogResponse.status}`);
       }
 
       if (!playlistResponse.ok) {
         throw new Error(`Playlist respondeu ${playlistResponse.status}`);
       }
 
-      const data = (await searchResponse.json()) as { items?: RemoteSong[] };
+      if (!searchResponse.ok) {
+        throw new Error(`Busca respondeu ${searchResponse.status}`);
+      }
+
+      const catalogData = (await catalogResponse.json()) as { items?: RemoteSong[] };
       const playlistData = (await playlistResponse.json()) as { bands?: RemotePlaylistBand[] };
-      const items = Array.isArray(data.items) ? data.items : [];
+      const searchData = (await searchResponse.json()) as { items?: RemoteSong[] };
+      const catalogItems = Array.isArray(catalogData.items) ? catalogData.items : [];
+      const searchItems = Array.isArray(searchData.items) ? searchData.items : [];
       const bands = Array.isArray(playlistData.bands) ? playlistData.bands : [];
+      const deduped = new Map<string, RemoteSong>();
+      [...catalogItems, ...searchItems].forEach((song) => {
+        deduped.set(song.id, song);
+      });
+      const items = [...deduped.values()];
+
       setRemoteSongs(items);
       setRemoteBands(bands);
 
       if (items.length === 0) {
-        setSongsError('O backend respondeu, mas nao encontrou musicas para esse BPM.');
+        setSongsError('O backend respondeu, mas ainda nao encontrou musicas para esse BPM.');
       }
     } catch (error) {
       setRemoteSongs([]);
@@ -712,11 +729,11 @@ function TracksScreen(props: {
   selectedTrackId: string;
   onSelectTrack: (value: string) => void;
 }) {
-  const genreOptions = ['all', 'pop', 'rock', 'electronic', 'hip hop', 'indie', 'dance'];
+  const genreOptions = ['all', 'pop', 'rock', 'hip hop', 'electronic', 'metal'];
   return (
     <View style={styles.screen}>
       <Text style={styles.title}>Musicas por BPM</Text>
-      <Text style={styles.subtitle}>As faixas abaixo vem do seu backend com busca real no YouTube Music.</Text>
+      <Text style={styles.subtitle}>O catalogo principal agora prioriza sua lista curada por BPM e complementa com busca real.</Text>
 
       <Card>
         <View style={styles.rowBetween}>
@@ -755,11 +772,11 @@ function TracksScreen(props: {
       </Card>
 
       <Card>
-        <Text style={styles.cardLabel}>YouTube Music real</Text>
+        <Text style={styles.cardLabel}>Catalogo principal</Text>
         {props.isFetchingSongs ? (
           <View style={styles.loadingRow}>
             <ActivityIndicator color="#C3FF3B" />
-            <Text style={styles.metricHint}>Buscando musicas reais...</Text>
+            <Text style={styles.metricHint}>Buscando musicas do catalogo e da web...</Text>
           </View>
         ) : null}
         {props.songsError ? <Text style={styles.errorText}>{props.songsError}</Text> : null}
@@ -773,7 +790,7 @@ function TracksScreen(props: {
           </Pressable>
         ))}
         {!props.isFetchingSongs && props.remoteSongs.length === 0 ? (
-          <Text style={styles.emptyText}>Sem resultados reais agora. O app continua com demos locais como fallback.</Text>
+          <Text style={styles.emptyText}>Sem resultados do catalogo agora. O app continua com sugestoes pre-configuradas como fallback.</Text>
         ) : null}
       </Card>
 

@@ -273,20 +273,41 @@ def matches_genre(song: dict[str, Any], genre: str | None) -> bool:
     return any(genre.lower() in value for value in genres)
 
 
+def tempo_variants(bpm: int) -> list[int]:
+    variants = {int(bpm)}
+    halved = float(bpm)
+    while halved > MAX_BPM:
+        halved /= 2
+        variants.add(int(round(halved)))
+    doubled = float(bpm)
+    while doubled < MIN_BPM:
+        doubled *= 2
+        variants.add(int(round(doubled)))
+    return sorted(variants)
+
+
+def best_tempo_distance(song_bpm: int, target_bpm: int) -> tuple[int, int]:
+    variants = tempo_variants(song_bpm)
+    best_variant = min(variants, key=lambda value: abs(value - target_bpm))
+    return abs(best_variant - target_bpm), best_variant
+
+
 def search_catalog_by_bpm(bpm: int, limit: int, genre: str | None = None, tolerance: int = 8) -> list[dict[str, Any]]:
-    matches: list[dict[str, Any]] = []
+    matches: list[tuple[int, dict[str, Any]]] = []
     for item in load_catalog():
         song = normalize_catalog_song(item)
         if not song:
             continue
-        if abs(song["bpmHint"] - bpm) > tolerance:
+        distance, matched_variant = best_tempo_distance(song["bpmHint"], bpm)
+        if distance > tolerance:
             continue
         if not matches_genre(song, genre):
             continue
-        matches.append(song)
+        song["matchedBpm"] = matched_variant
+        matches.append((distance, song))
 
-    matches.sort(key=lambda song: abs(song["bpmHint"] - bpm))
-    return matches[:limit]
+    matches.sort(key=lambda item: (item[0], abs(item[1]["bpmHint"] - bpm), item[1]["title"]))
+    return [song for _, song in matches[:limit]]
 
 
 def search_catalog_by_text(q: str, bpm: int, limit: int, genre: str | None = None) -> list[dict[str, Any]]:

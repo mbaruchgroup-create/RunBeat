@@ -1,202 +1,502 @@
 [
   {
-    "id": "cat-too-sweet",
-    "title": "Too Sweet",
-    "artists": ["Hozier"],
-    "bpm": 117,
-    "genres": ["alternative", "indie", "rock"],
-    "album": "Unreal Unearth: Unending",
-    "youtubeMusicQuery": "Too Sweet Hozier",
-    "youtubeQuery": "Too Sweet Hozier"
-  },
-  {
-    "id": "cat-espresso",
-    "title": "Espresso",
-    "artists": ["Sabrina Carpenter"],
-    "bpm": 104,
-    "genres": ["pop"],
-    "album": "Short n' Sweet",
-    "youtubeMusicQuery": "Espresso Sabrina Carpenter",
-    "youtubeQuery": "Espresso Sabrina Carpenter"
-  },
-  {
-    "id": "cat-blinding-lights",
-    "title": "Blinding Lights",
-    "artists": ["The Weeknd"],
-    "bpm": 171,
-    "genres": ["pop", "synthpop"],
-    "album": "After Hours",
-    "youtubeMusicQuery": "Blinding Lights The Weeknd",
-    "youtubeQuery": "Blinding Lights The Weeknd"
-  },
-  {
-    "id": "cat-levitating",
-    "title": "Levitating",
-    "artists": ["Dua Lipa"],
-    "bpm": 103,
-    "genres": ["pop", "dance"],
-    "album": "Future Nostalgia",
-    "youtubeMusicQuery": "Levitating Dua Lipa",
-    "youtubeQuery": "Levitating Dua Lipa"
-  },
-  {
-    "id": "cat-titanium",
-    "title": "Titanium",
-    "artists": ["David Guetta", "Sia"],
-    "bpm": 126,
-    "genres": ["electronic", "dance"],
-    "album": "Nothing but the Beat",
-    "youtubeMusicQuery": "Titanium David Guetta Sia",
-    "youtubeQuery": "Titanium David Guetta Sia"
-  },
-  {
-    "id": "cat-head-heart",
-    "title": "Head & Heart",
-    "artists": ["Joel Corry", "MNEK"],
-    "bpm": 123,
-    "genres": ["electronic", "dance"],
-    "album": "Head & Heart",
-    "youtubeMusicQuery": "Head and Heart Joel Corry MNEK",
-    "youtubeQuery": "Head and Heart Joel Corry MNEK"
-  },
-  {
-    "id": "cat-cant-hold-us",
+    "id": "cat-can-t-hold-us",
     "title": "Can't Hold Us",
-    "artists": ["Macklemore & Ryan Lewis", "Ray Dalton"],
+    "artists": ["Macklemore & Ryan Lewis"],
     "bpm": 146,
-    "genres": ["hip hop", "pop rap"],
-    "album": "The Heist",
-    "youtubeMusicQuery": "Can't Hold Us Macklemore Ryan Lewis Ray Dalton",
-    "youtubeQuery": "Can't Hold Us Macklemore Ryan Lewis Ray Dalton"
+    "genres": ["hip hop"],
+    "album": null,
+    "youtubeMusicQuery": "Can't Hold Us Macklemore & Ryan Lewis",
+    "youtubeQuery": "Can't Hold Us Macklemore & Ryan Lewis"
   },
   {
-    "id": "cat-stronger",
-    "title": "Stronger",
-    "artists": ["Kanye West"],
-    "bpm": 104,
-    "genres": ["hip hop", "rap"],
-    "album": "Graduation",
-    "youtubeMusicQuery": "Stronger Kanye West",
-    "youtubeQuery": "Stronger Kanye West"
-  },
-  {
-    "id": "cat-dont-start-now",
-    "title": "Don't Start Now",
-    "artists": ["Dua Lipa"],
-    "bpm": 124,
-    "genres": ["pop", "dance"],
-    "album": "Future Nostalgia",
-    "youtubeMusicQuery": "Don't Start Now Dua Lipa",
-    "youtubeQuery": "Don't Start Now Dua Lipa"
-  },
-  {
-    "id": "cat-cold-heart",
-    "title": "Cold Heart (PNAU Remix)",
-    "artists": ["Elton John", "Dua Lipa"],
-    "bpm": 116,
-    "genres": ["pop", "dance"],
-    "album": "The Lockdown Sessions",
-    "youtubeMusicQuery": "Cold Heart PNAU Remix Elton John Dua Lipa",
-    "youtubeQuery": "Cold Heart PNAU Remix Elton John Dua Lipa"
-  },
-  {
-    "id": "cat-flowers",
-    "title": "Flowers",
-    "artists": ["Miley Cyrus"],
-    "bpm": 118,
-    "genres": ["pop"],
-    "album": "Endless Summer Vacation",
-    "youtubeMusicQuery": "Flowers Miley Cyrus",
-    "youtubeQuery": "Flowers Miley Cyrus"
-  },
-  {
-    "id": "cat-anti-hero",
-    "title": "Anti-Hero",
-    "artists": ["Taylor Swift"],
-    "bpm": 97,
-    "genres": ["pop"],
-    "album": "Midnights",
-    "youtubeMusicQuery": "Anti Hero Taylor Swift",
-    "youtubeQuery": "Anti Hero Taylor Swift"
-  },
-  {
-    "id": "cat-dance-the-night",
-    "title": "Dance The Night",
-    "artists": ["Dua Lipa"],
-    "bpm": 110,
-    "genres": ["pop", "dance"],
-    "album": "Barbie The Album",
-    "youtubeMusicQuery": "Dance The Night Dua Lipa",
-    "youtubeQuery": "Dance The Night Dua Lipa"
-  },
-  {
-    "id": "cat-viva-la-vida",
-    "title": "Viva La Vida",
-    "artists": ["Coldplay"],
-    "bpm": 138,
-    "genres": ["rock", "alternative"],
-    "album": "Viva La Vida",
-    "youtubeMusicQuery": "Viva La Vida Coldplay",
-    "youtubeQuery": "Viva La Vida Coldplay"
-  },
-  {
-    "id": "cat-mr-brightside",
-    "title": "Mr. Brightside",
-    "artists": ["The Killers"],
+    "id": "cat-remember-the-name",
+    "title": "Remember The Name",
+    "artists": ["Fort Minor"],
     "bpm": 148,
-    "genres": ["rock", "indie"],
-    "album": "Hot Fuss",
-    "youtubeMusicQuery": "Mr Brightside The Killers",
-    "youtubeQuery": "Mr Brightside The Killers"
+    "genres": ["hip hop"],
+    "album": null,
+    "youtubeMusicQuery": "Remember The Name Fort Minor",
+    "youtubeQuery": "Remember The Name Fort Minor"
+  },
+  {
+    "id": "cat-till-i-collapse",
+    "title": "Till I Collapse",
+    "artists": ["Eminem"],
+    "bpm": 171,
+    "genres": ["hip hop"],
+    "album": null,
+    "youtubeMusicQuery": "Till I Collapse Eminem",
+    "youtubeQuery": "Till I Collapse Eminem"
   },
   {
     "id": "cat-lose-yourself",
     "title": "Lose Yourself",
     "artists": ["Eminem"],
     "bpm": 171,
-    "genres": ["hip hop", "rap"],
-    "album": "8 Mile",
+    "genres": ["hip hop"],
+    "album": null,
     "youtubeMusicQuery": "Lose Yourself Eminem",
     "youtubeQuery": "Lose Yourself Eminem"
   },
   {
-    "id": "cat-hey-ya",
-    "title": "Hey Ya!",
-    "artists": ["Outkast"],
-    "bpm": 160,
-    "genres": ["hip hop", "funk", "pop"],
-    "album": "Speakerboxxx/The Love Below",
-    "youtubeMusicQuery": "Hey Ya Outkast",
-    "youtubeQuery": "Hey Ya Outkast"
+    "id": "cat-stronger",
+    "title": "Stronger",
+    "artists": ["Kanye West"],
+    "bpm": 208,
+    "genres": ["hip hop"],
+    "album": null,
+    "youtubeMusicQuery": "Stronger Kanye West",
+    "youtubeQuery": "Stronger Kanye West"
   },
   {
-    "id": "cat-take-on-me",
-    "title": "Take On Me",
-    "artists": ["a-ha"],
-    "bpm": 169,
-    "genres": ["pop", "synthpop"],
-    "album": "Hunting High and Low",
-    "youtubeMusicQuery": "Take On Me a-ha",
-    "youtubeQuery": "Take On Me a-ha"
+    "id": "cat-industry-baby",
+    "title": "Industry Baby",
+    "artists": ["Lil Nas X"],
+    "bpm": 150,
+    "genres": ["hip hop"],
+    "album": null,
+    "youtubeMusicQuery": "Industry Baby Lil Nas X",
+    "youtubeQuery": "Industry Baby Lil Nas X"
   },
   {
-    "id": "cat-dont-stop-me-now",
-    "title": "Don't Stop Me Now",
-    "artists": ["Queen"],
-    "bpm": 156,
+    "id": "cat-power",
+    "title": "POWER",
+    "artists": ["Kanye West"],
+    "bpm": 154,
+    "genres": ["hip hop"],
+    "album": null,
+    "youtubeMusicQuery": "POWER Kanye West",
+    "youtubeQuery": "POWER Kanye West"
+  },
+  {
+    "id": "cat-believer",
+    "title": "Believer",
+    "artists": ["Imagine Dragons"],
+    "bpm": 125,
     "genres": ["rock"],
-    "album": "Jazz",
-    "youtubeMusicQuery": "Don't Stop Me Now Queen",
-    "youtubeQuery": "Don't Stop Me Now Queen"
+    "album": null,
+    "youtubeMusicQuery": "Believer Imagine Dragons",
+    "youtubeQuery": "Believer Imagine Dragons"
   },
   {
-    "id": "cat-september",
-    "title": "September",
-    "artists": ["Earth, Wind & Fire"],
+    "id": "cat-warriors",
+    "title": "Warriors",
+    "artists": ["Imagine Dragons"],
+    "bpm": 157,
+    "genres": ["rock"],
+    "album": null,
+    "youtubeMusicQuery": "Warriors Imagine Dragons",
+    "youtubeQuery": "Warriors Imagine Dragons"
+  },
+  {
+    "id": "cat-radioactive",
+    "title": "Radioactive",
+    "artists": ["Imagine Dragons"],
+    "bpm": 136,
+    "genres": ["rock"],
+    "album": null,
+    "youtubeMusicQuery": "Radioactive Imagine Dragons",
+    "youtubeQuery": "Radioactive Imagine Dragons"
+  },
+  {
+    "id": "cat-the-pretender",
+    "title": "The Pretender",
+    "artists": ["Foo Fighters"],
+    "bpm": 172,
+    "genres": ["rock"],
+    "album": null,
+    "youtubeMusicQuery": "The Pretender Foo Fighters",
+    "youtubeQuery": "The Pretender Foo Fighters"
+  },
+  {
+    "id": "cat-monkey-wrench",
+    "title": "Monkey Wrench",
+    "artists": ["Foo Fighters"],
+    "bpm": 174,
+    "genres": ["rock"],
+    "album": null,
+    "youtubeMusicQuery": "Monkey Wrench Foo Fighters",
+    "youtubeQuery": "Monkey Wrench Foo Fighters"
+  },
+  {
+    "id": "cat-best-of-you",
+    "title": "Best Of You",
+    "artists": ["Foo Fighters"],
+    "bpm": 130,
+    "genres": ["rock"],
+    "album": null,
+    "youtubeMusicQuery": "Best Of You Foo Fighters",
+    "youtubeQuery": "Best Of You Foo Fighters"
+  },
+  {
+    "id": "cat-all-my-life",
+    "title": "All My Life",
+    "artists": ["Foo Fighters"],
+    "bpm": 167,
+    "genres": ["rock"],
+    "album": null,
+    "youtubeMusicQuery": "All My Life Foo Fighters",
+    "youtubeQuery": "All My Life Foo Fighters"
+  },
+  {
+    "id": "cat-american-idiot",
+    "title": "American Idiot",
+    "artists": ["Green Day"],
+    "bpm": 186,
+    "genres": ["rock"],
+    "album": null,
+    "youtubeMusicQuery": "American Idiot Green Day",
+    "youtubeQuery": "American Idiot Green Day"
+  },
+  {
+    "id": "cat-basket-case",
+    "title": "Basket Case",
+    "artists": ["Green Day"],
+    "bpm": 176,
+    "genres": ["rock"],
+    "album": null,
+    "youtubeMusicQuery": "Basket Case Green Day",
+    "youtubeQuery": "Basket Case Green Day"
+  },
+  {
+    "id": "cat-holiday",
+    "title": "Holiday",
+    "artists": ["Green Day"],
+    "bpm": 146,
+    "genres": ["rock"],
+    "album": null,
+    "youtubeMusicQuery": "Holiday Green Day",
+    "youtubeQuery": "Holiday Green Day"
+  },
+  {
+    "id": "cat-the-kids-aren-t-alright",
+    "title": "The Kids Aren't Alright",
+    "artists": ["The Offspring"],
+    "bpm": 160,
+    "genres": ["rock"],
+    "album": null,
+    "youtubeMusicQuery": "The Kids Aren't Alright The Offspring",
+    "youtubeQuery": "The Kids Aren't Alright The Offspring"
+  },
+  {
+    "id": "cat-you-re-gonna-go-far-kid",
+    "title": "You're Gonna Go Far Kid",
+    "artists": ["The Offspring"],
+    "bpm": 173,
+    "genres": ["rock"],
+    "album": null,
+    "youtubeMusicQuery": "You're Gonna Go Far Kid The Offspring",
+    "youtubeQuery": "You're Gonna Go Far Kid The Offspring"
+  },
+  {
+    "id": "cat-self-esteem",
+    "title": "Self Esteem",
+    "artists": ["The Offspring"],
+    "bpm": 167,
+    "genres": ["rock"],
+    "album": null,
+    "youtubeMusicQuery": "Self Esteem The Offspring",
+    "youtubeQuery": "Self Esteem The Offspring"
+  },
+  {
+    "id": "cat-in-the-end",
+    "title": "In The End",
+    "artists": ["Linkin Park"],
+    "bpm": 210,
+    "genres": ["rock"],
+    "album": null,
+    "youtubeMusicQuery": "In The End Linkin Park",
+    "youtubeQuery": "In The End Linkin Park"
+  },
+  {
+    "id": "cat-faint",
+    "title": "Faint",
+    "artists": ["Linkin Park"],
+    "bpm": 270,
+    "genres": ["rock"],
+    "album": null,
+    "youtubeMusicQuery": "Faint Linkin Park",
+    "youtubeQuery": "Faint Linkin Park"
+  },
+  {
+    "id": "cat-bleed-it-out",
+    "title": "Bleed It Out",
+    "artists": ["Linkin Park"],
+    "bpm": 148,
+    "genres": ["rock"],
+    "album": null,
+    "youtubeMusicQuery": "Bleed It Out Linkin Park",
+    "youtubeQuery": "Bleed It Out Linkin Park"
+  },
+  {
+    "id": "cat-given-up",
+    "title": "Given Up",
+    "artists": ["Linkin Park"],
+    "bpm": 190,
+    "genres": ["rock"],
+    "album": null,
+    "youtubeMusicQuery": "Given Up Linkin Park",
+    "youtubeQuery": "Given Up Linkin Park"
+  },
+  {
+    "id": "cat-numb",
+    "title": "Numb",
+    "artists": ["Linkin Park"],
+    "bpm": 220,
+    "genres": ["rock"],
+    "album": null,
+    "youtubeMusicQuery": "Numb Linkin Park",
+    "youtubeQuery": "Numb Linkin Park"
+  },
+  {
+    "id": "cat-chop-suey",
+    "title": "Chop Suey!",
+    "artists": ["System Of A Down"],
+    "bpm": 254,
+    "genres": ["metal"],
+    "album": null,
+    "youtubeMusicQuery": "Chop Suey! System Of A Down",
+    "youtubeQuery": "Chop Suey! System Of A Down"
+  },
+  {
+    "id": "cat-toxicity",
+    "title": "Toxicity",
+    "artists": ["System Of A Down"],
+    "bpm": 143,
+    "genres": ["metal"],
+    "album": null,
+    "youtubeMusicQuery": "Toxicity System Of A Down",
+    "youtubeQuery": "Toxicity System Of A Down"
+  },
+  {
+    "id": "cat-down-with-the-sickness",
+    "title": "Down With The Sickness",
+    "artists": ["Disturbed"],
+    "bpm": 180,
+    "genres": ["metal"],
+    "album": null,
+    "youtubeMusicQuery": "Down With The Sickness Disturbed",
+    "youtubeQuery": "Down With The Sickness Disturbed"
+  },
+  {
+    "id": "cat-indestructible",
+    "title": "Indestructible",
+    "artists": ["Disturbed"],
+    "bpm": 140,
+    "genres": ["metal"],
+    "album": null,
+    "youtubeMusicQuery": "Indestructible Disturbed",
+    "youtubeQuery": "Indestructible Disturbed"
+  },
+  {
+    "id": "cat-hail-to-the-king",
+    "title": "Hail To The King",
+    "artists": ["Avenged Sevenfold"],
+    "bpm": 118,
+    "genres": ["metal"],
+    "album": null,
+    "youtubeMusicQuery": "Hail To The King Avenged Sevenfold",
+    "youtubeQuery": "Hail To The King Avenged Sevenfold"
+  },
+  {
+    "id": "cat-nightmare",
+    "title": "Nightmare",
+    "artists": ["Avenged Sevenfold"],
+    "bpm": 170,
+    "genres": ["metal"],
+    "album": null,
+    "youtubeMusicQuery": "Nightmare Avenged Sevenfold",
+    "youtubeQuery": "Nightmare Avenged Sevenfold"
+  },
+  {
+    "id": "cat-through-the-fire-and-flames",
+    "title": "Through The Fire And Flames",
+    "artists": ["DragonForce"],
+    "bpm": 200,
+    "genres": ["metal"],
+    "album": null,
+    "youtubeMusicQuery": "Through The Fire And Flames DragonForce",
+    "youtubeQuery": "Through The Fire And Flames DragonForce"
+  },
+  {
+    "id": "cat-fear-of-the-dark",
+    "title": "Fear Of The Dark",
+    "artists": ["Iron Maiden"],
+    "bpm": 174,
+    "genres": ["metal"],
+    "album": null,
+    "youtubeMusicQuery": "Fear Of The Dark Iron Maiden",
+    "youtubeQuery": "Fear Of The Dark Iron Maiden"
+  },
+  {
+    "id": "cat-the-trooper",
+    "title": "The Trooper",
+    "artists": ["Iron Maiden"],
+    "bpm": 160,
+    "genres": ["metal"],
+    "album": null,
+    "youtubeMusicQuery": "The Trooper Iron Maiden",
+    "youtubeQuery": "The Trooper Iron Maiden"
+  },
+  {
+    "id": "cat-run-to-the-hills",
+    "title": "Run To The Hills",
+    "artists": ["Iron Maiden"],
+    "bpm": 173,
+    "genres": ["metal"],
+    "album": null,
+    "youtubeMusicQuery": "Run To The Hills Iron Maiden",
+    "youtubeQuery": "Run To The Hills Iron Maiden"
+  },
+  {
+    "id": "cat-master-of-puppets",
+    "title": "Master Of Puppets",
+    "artists": ["Metallica"],
+    "bpm": 212,
+    "genres": ["metal"],
+    "album": null,
+    "youtubeMusicQuery": "Master Of Puppets Metallica",
+    "youtubeQuery": "Master Of Puppets Metallica"
+  },
+  {
+    "id": "cat-fuel",
+    "title": "Fuel",
+    "artists": ["Metallica"],
+    "bpm": 184,
+    "genres": ["metal"],
+    "album": null,
+    "youtubeMusicQuery": "Fuel Metallica",
+    "youtubeQuery": "Fuel Metallica"
+  },
+  {
+    "id": "cat-enter-sandman",
+    "title": "Enter Sandman",
+    "artists": ["Metallica"],
+    "bpm": 123,
+    "genres": ["metal"],
+    "album": null,
+    "youtubeMusicQuery": "Enter Sandman Metallica",
+    "youtubeQuery": "Enter Sandman Metallica"
+  },
+  {
+    "id": "cat-duality",
+    "title": "Duality",
+    "artists": ["Slipknot"],
+    "bpm": 174,
+    "genres": ["metal"],
+    "album": null,
+    "youtubeMusicQuery": "Duality Slipknot",
+    "youtubeQuery": "Duality Slipknot"
+  },
+  {
+    "id": "cat-psychosocial",
+    "title": "Psychosocial",
+    "artists": ["Slipknot"],
+    "bpm": 135,
+    "genres": ["metal"],
+    "album": null,
+    "youtubeMusicQuery": "Psychosocial Slipknot",
+    "youtubeQuery": "Psychosocial Slipknot"
+  },
+  {
+    "id": "cat-titanium",
+    "title": "Titanium",
+    "artists": ["David Guetta"],
     "bpm": 126,
-    "genres": ["funk", "disco", "soul"],
-    "album": "The Best of Earth, Wind & Fire",
-    "youtubeMusicQuery": "September Earth Wind and Fire",
-    "youtubeQuery": "September Earth Wind and Fire"
+    "genres": ["electronic"],
+    "album": null,
+    "youtubeMusicQuery": "Titanium David Guetta",
+    "youtubeQuery": "Titanium David Guetta"
+  },
+  {
+    "id": "cat-play-hard",
+    "title": "Play Hard",
+    "artists": ["David Guetta"],
+    "bpm": 130,
+    "genres": ["electronic"],
+    "album": null,
+    "youtubeMusicQuery": "Play Hard David Guetta",
+    "youtubeQuery": "Play Hard David Guetta"
+  },
+  {
+    "id": "cat-levels",
+    "title": "Levels",
+    "artists": ["Avicii"],
+    "bpm": 126,
+    "genres": ["electronic"],
+    "album": null,
+    "youtubeMusicQuery": "Levels Avicii",
+    "youtubeQuery": "Levels Avicii"
+  },
+  {
+    "id": "cat-wake-me-up",
+    "title": "Wake Me Up",
+    "artists": ["Avicii"],
+    "bpm": 124,
+    "genres": ["electronic"],
+    "album": null,
+    "youtubeMusicQuery": "Wake Me Up Avicii",
+    "youtubeQuery": "Wake Me Up Avicii"
+  },
+  {
+    "id": "cat-animals",
+    "title": "Animals",
+    "artists": ["Martin Garrix"],
+    "bpm": 128,
+    "genres": ["electronic"],
+    "album": null,
+    "youtubeMusicQuery": "Animals Martin Garrix",
+    "youtubeQuery": "Animals Martin Garrix"
+  },
+  {
+    "id": "cat-tremor",
+    "title": "Tremor",
+    "artists": ["Martin Garrix & Dimitri Vegas"],
+    "bpm": 128,
+    "genres": ["electronic"],
+    "album": null,
+    "youtubeMusicQuery": "Tremor Martin Garrix & Dimitri Vegas",
+    "youtubeQuery": "Tremor Martin Garrix & Dimitri Vegas"
+  },
+  {
+    "id": "cat-spaceman",
+    "title": "Spaceman",
+    "artists": ["Hardwell"],
+    "bpm": 128,
+    "genres": ["electronic"],
+    "album": null,
+    "youtubeMusicQuery": "Spaceman Hardwell",
+    "youtubeQuery": "Spaceman Hardwell"
+  },
+  {
+    "id": "cat-adagio-for-strings",
+    "title": "Adagio For Strings",
+    "artists": ["Tiesto"],
+    "bpm": 138,
+    "genres": ["electronic"],
+    "album": null,
+    "youtubeMusicQuery": "Adagio For Strings Tiesto",
+    "youtubeQuery": "Adagio For Strings Tiesto"
+  },
+  {
+    "id": "cat-one-kiss",
+    "title": "One Kiss",
+    "artists": ["Dua Lipa"],
+    "bpm": 124,
+    "genres": ["pop"],
+    "album": null,
+    "youtubeMusicQuery": "One Kiss Dua Lipa",
+    "youtubeQuery": "One Kiss Dua Lipa"
+  },
+  {
+    "id": "cat-levitating",
+    "title": "Levitating",
+    "artists": ["Dua Lipa"],
+    "bpm": 206,
+    "genres": ["pop"],
+    "album": null,
+    "youtubeMusicQuery": "Levitating Dua Lipa",
+    "youtubeQuery": "Levitating Dua Lipa"
   }
 ]
