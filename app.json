@@ -2,7 +2,7 @@
   "expo": {
     "name": "RunBeat",
     "slug": "runbeat",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
@@ -11,6 +11,7 @@
       "bundleIdentifier": "com.eliaslobato.runbeat"
     },
     "android": {
+      "versionCode": 2,
       "package": "com.eliaslobato.runbeat",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",

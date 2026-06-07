@@ -50,6 +50,7 @@ import {
 } from './src/utils/youtube';
 
 const STORAGE_KEY = 'runbeat-settings-v2';
+const VISUAL_BUILD_LABEL = 'V2-visual-2';
 
 export default function App() {
   const [tab, setTab] = useState<AppTab>('ritmo');
@@ -601,6 +602,7 @@ function RhythmScreen(props: {
   return (
     <View style={styles.screen}>
       <Text style={styles.eyebrow}>RunBeat</Text>
+      <Text style={styles.buildBadge}>{VISUAL_BUILD_LABEL}</Text>
       <Text style={styles.title}>Defina seu ritmo</Text>
       <Text style={styles.subtitle}>Pace alvo vira BPM de passada automaticamente.</Text>
 
@@ -951,6 +953,7 @@ function TracksScreen(props: {
   return (
     <View style={styles.screen}>
       <Text style={styles.title}>Musicas</Text>
+      <Text style={styles.buildBadge}>{VISUAL_BUILD_LABEL}</Text>
       <Text style={styles.subtitle}>Catalogo curado por BPM com apoio do YouTube Music e player dentro do RunBeat.</Text>
 
       <Card>
@@ -1106,6 +1109,7 @@ function TrainingsScreen(props: {
   return (
     <View style={styles.screen}>
       <Text style={styles.title}>Treinos</Text>
+      <Text style={styles.buildBadge}>{VISUAL_BUILD_LABEL}</Text>
       <Text style={styles.subtitle}>Programas progressivos: a cadencia sobe em etapas e a musica acompanha o seu ritmo.</Text>
 
       <Card>
@@ -1299,6 +1303,7 @@ function SettingsScreen(props: {
   return (
     <View style={styles.screen}>
       <Text style={styles.title}>Mixer</Text>
+      <Text style={styles.buildBadge}>{VISUAL_BUILD_LABEL}</Text>
       <Text style={styles.subtitle}>Equilibre musica e metronomo, ajuste o perfil de corrida e mantenha o bip no comando.</Text>
 
       <Card>
@@ -1668,6 +1673,18 @@ const styles = StyleSheet.create({
     fontSize: 12,
     letterSpacing: 2.2,
     fontWeight: '800',
+    textTransform: 'uppercase',
+  },
+  buildBadge: {
+    alignSelf: 'flex-start',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 999,
+    backgroundColor: 'rgba(52, 214, 232, 0.16)',
+    color: '#34D6E8',
+    fontSize: 11,
+    fontWeight: '800',
+    letterSpacing: 0.4,
     textTransform: 'uppercase',
   },
   title: {
