@@ -1,4 +1,4 @@
-export type AppTab = 'ritmo' | 'correr' | 'musicas' | 'treinos' | 'config';
+export type AppTab = 'ritmo' | 'treinos' | 'correr' | 'musicas' | 'mixer';
 
 export type InputMode = 'pace' | 'speed' | 'goal';
 

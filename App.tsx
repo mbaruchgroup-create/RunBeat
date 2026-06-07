@@ -47,7 +47,7 @@ import {
   normalizeBackendUrl,
 } from './src/utils/youtube';
 
-const STORAGE_KEY = 'runbeat-settings-v1';
+const STORAGE_KEY = 'runbeat-settings-v2';
 
 export default function App() {
   const [tab, setTab] = useState<AppTab>('ritmo');
@@ -80,7 +80,11 @@ export default function App() {
       .then((value) => {
         if (!value) return;
         const parsed = JSON.parse(value) as Partial<AppSettings>;
-        setSettings((current) => ({ ...current, ...parsed }));
+        setSettings((current) => ({
+          ...current,
+          ...parsed,
+          backendUrl: DEFAULT_SETTINGS.backendUrl,
+        }));
       })
       .catch(() => undefined);
   }, []);
@@ -438,7 +442,7 @@ export default function App() {
             onStartTraining={startTraining}
           />
         );
-      case 'config':
+      case 'mixer':
         return (
           <SettingsScreen
             settings={settings}
@@ -486,10 +490,10 @@ export default function App() {
         <ScrollView contentContainerStyle={styles.content}>{currentScreen}</ScrollView>
         <View style={styles.tabBar}>
           <TabButton label="Ritmo" tab="ritmo" current={tab} icon="speedometer-outline" onPress={setTab} />
+          <TabButton label="Treinos" tab="treinos" current={tab} icon="fitness-outline" onPress={setTab} />
           <TabButton label="Correr" tab="correr" current={tab} icon="pulse-outline" onPress={setTab} />
           <TabButton label="Musicas" tab="musicas" current={tab} icon="musical-notes-outline" onPress={setTab} />
-          <TabButton label="Treinos" tab="treinos" current={tab} icon="fitness-outline" onPress={setTab} />
-          <TabButton label="Config" tab="config" current={tab} icon="options-outline" onPress={setTab} />
+          <TabButton label="Mixer" tab="mixer" current={tab} icon="options-outline" onPress={setTab} />
         </View>
       </View>
     </SafeAreaView>
@@ -1083,8 +1087,8 @@ function SettingsScreen(props: {
 }) {
   return (
     <View style={styles.screen}>
-      <Text style={styles.title}>Configuracoes</Text>
-      <Text style={styles.subtitle}>Ajuste perfil de corrida, backend do YouTube Music, som e volumes.</Text>
+      <Text style={styles.title}>Mixer</Text>
+      <Text style={styles.subtitle}>Equilibre musica e metronomo, ajuste o perfil de corrida e mantenha o bip no comando.</Text>
 
       <Card>
         <Text style={styles.cardLabel}>Corpo e passada</Text>
@@ -1130,6 +1134,23 @@ function SettingsScreen(props: {
       </Card>
 
       <Card>
+        <Text style={styles.cardLabel}>Equilibrio automatico</Text>
+        <Text style={styles.metricHint}>Quando ativado, a musica fica sempre abaixo do metronomo.</Text>
+        <View style={styles.switchRow}>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.switchTitle}>Bip sempre audivel</Text>
+            <Text style={styles.switchHint}>Limita a musica abaixo do metronomo</Text>
+          </View>
+          <Switch
+            value={props.settings.autoDuck}
+            onValueChange={(value) => props.onChangeSettings('autoDuck', value)}
+            trackColor={{ false: '#2D333B', true: '#C3FF3B' }}
+            thumbColor={props.settings.autoDuck ? '#0D1116' : '#EEF2F7'}
+          />
+        </View>
+      </Card>
+
+      <Card>
         <Text style={styles.cardLabel}>Volumes</Text>
         <VolumeRow
           label="Metronomo"
@@ -1143,18 +1164,6 @@ function SettingsScreen(props: {
           icon="musical-notes-outline"
           onChange={(value) => props.onChangeSettings('musicVolume', value)}
         />
-        <View style={styles.switchRow}>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.switchTitle}>Bip sempre audivel</Text>
-            <Text style={styles.switchHint}>Limita a musica abaixo do metronomo</Text>
-          </View>
-          <Switch
-            value={props.settings.autoDuck}
-            onValueChange={(value) => props.onChangeSettings('autoDuck', value)}
-            trackColor={{ false: '#2D333B', true: '#C3FF3B' }}
-            thumbColor={props.settings.autoDuck ? '#0D1116' : '#EEF2F7'}
-          />
-        </View>
       </Card>
     </View>
   );
