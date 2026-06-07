@@ -1,0 +1,96 @@
+[
+  {
+    "id": "beginner_001",
+    "name": "Primeiros 5km",
+    "level": "beginner",
+    "durationMinutes": 30,
+    "segments": [
+      {
+        "minuteStart": 0,
+        "minuteEnd": 5,
+        "targetCadence": 140
+      },
+      {
+        "minuteStart": 5,
+        "minuteEnd": 10,
+        "targetCadence": 145
+      },
+      {
+        "minuteStart": 10,
+        "minuteEnd": 20,
+        "targetCadence": 150
+      },
+      {
+        "minuteStart": 20,
+        "minuteEnd": 30,
+        "targetCadence": 155
+      }
+    ]
+  },
+  {
+    "id": "intermediate_001",
+    "name": "Quebra dos 30",
+    "level": "intermediate",
+    "durationMinutes": 40,
+    "segments": [
+      {
+        "minuteStart": 0,
+        "minuteEnd": 5,
+        "targetCadence": 150
+      },
+      {
+        "minuteStart": 5,
+        "minuteEnd": 15,
+        "targetCadence": 160
+      },
+      {
+        "minuteStart": 15,
+        "minuteEnd": 25,
+        "targetCadence": 165
+      },
+      {
+        "minuteStart": 25,
+        "minuteEnd": 35,
+        "targetCadence": 170
+      },
+      {
+        "minuteStart": 35,
+        "minuteEnd": 40,
+        "targetCadence": 175
+      }
+    ]
+  },
+  {
+    "id": "advanced_001",
+    "name": "RunBeat Beast Mode",
+    "level": "advanced",
+    "durationMinutes": 45,
+    "segments": [
+      {
+        "minuteStart": 0,
+        "minuteEnd": 5,
+        "targetCadence": 160
+      },
+      {
+        "minuteStart": 5,
+        "minuteEnd": 15,
+        "targetCadence": 170
+      },
+      {
+        "minuteStart": 15,
+        "minuteEnd": 25,
+        "targetCadence": 180
+      },
+      {
+        "minuteStart": 25,
+        "minuteEnd": 35,
+        "targetCadence": 185
+      },
+      {
+        "minuteStart": 35,
+        "minuteEnd": 45,
+        "targetCadence": 190
+      }
+    ]
+  }
+]

@@ -1020,6 +1020,9 @@ function TrackRow({ track, distance, active }: { track: Track; distance: number;
 
 function RemoteSongRow({ song, active }: { song: RemoteSong; active: boolean }) {
   const genreText = song.genres && song.genres.length > 0 ? song.genres.slice(0, 2).join(' · ') : getSongArtists(song);
+  const metaParts = [song.runningZone, song.energy ? `E${song.energy}` : null, song.subGenre].filter(Boolean);
+  const cadenceRange =
+    song.cadenceMin && song.cadenceMax ? `${song.cadenceMin}-${song.cadenceMax}` : song.cadenceTarget ? `${song.cadenceTarget}` : null;
   return (
     <View style={[styles.trackRow, active && styles.trackRowActive]}>
       <View style={[styles.trackCover, styles.remoteCover]}>
@@ -1029,10 +1032,11 @@ function RemoteSongRow({ song, active }: { song: RemoteSong; active: boolean }) 
         <Text style={styles.trackTitle}>{song.title}</Text>
         <Text style={styles.trackArtist}>{getSongArtists(song)}</Text>
         <Text style={styles.trackMeta}>{genreText}</Text>
+        {metaParts.length > 0 ? <Text style={styles.trackMeta}>{metaParts.join(' · ')}</Text> : null}
       </View>
       <View style={{ alignItems: 'flex-end' }}>
         <Text style={styles.trackBpm}>{song.durationText ?? `${song.bpmHint} BPM`}</Text>
-        <Text style={styles.trackDistance}>YT Music</Text>
+        <Text style={styles.trackDistance}>{cadenceRange ? `${cadenceRange} cad` : 'YT Music'}</Text>
       </View>
     </View>
   );

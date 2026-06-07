@@ -34,10 +34,20 @@ export type RemoteSong = {
   title: string;
   artists: string[];
   genres?: string[];
+  subGenre?: string;
   durationText?: string;
   album?: string;
   thumbnailUrl?: string;
   bpmHint: number;
+  effectiveBpm?: number;
+  cadenceTarget?: number;
+  cadenceMin?: number;
+  cadenceMax?: number;
+  energy?: number;
+  mood?: string[];
+  runningZone?: string;
+  spotifyUrl?: string;
+  tags?: string[];
   query: string;
   musicUrl: string;
   youtubeUrl: string;
@@ -49,4 +59,18 @@ export type RemotePlaylistBand = {
   bpm: number;
   description: string;
   items: RemoteSong[];
+};
+
+export type TrainingSegment = {
+  minuteStart: number;
+  minuteEnd: number;
+  targetCadence: number;
+};
+
+export type TrainingPlan = {
+  id: string;
+  name: string;
+  level: 'beginner' | 'intermediate' | 'advanced';
+  durationMinutes: number;
+  segments: TrainingSegment[];
 };

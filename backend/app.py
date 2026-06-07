@@ -26,6 +26,7 @@ ytmusic = YTMusic()
 CACHE_DIR = Path(__file__).resolve().parent / ".cache"
 CACHE_FILE = CACHE_DIR / "ytmusic_cache.json"
 CATEGORY_FILE = Path(__file__).resolve().parent / "data" / "catalog.json"
+TRAININGS_FILE = Path(__file__).resolve().parent / "data" / "trainings.json"
 CACHE_TTL = timedelta(hours=12)
 GETSONGBPM_API_KEY = os.getenv("GETSONGBPM_API_KEY", "").strip()
 GETSONGBPM_BASE_URL = "https://api.getsong.co"
@@ -84,6 +85,16 @@ def load_catalog() -> list[dict[str, Any]]:
         return []
     try:
         value = json.loads(CATEGORY_FILE.read_text(encoding="utf-8"))
+        return value if isinstance(value, list) else []
+    except Exception:
+        return []
+
+
+def load_trainings() -> list[dict[str, Any]]:
+    if not TRAININGS_FILE.exists():
+        return []
+    try:
+        value = json.loads(TRAININGS_FILE.read_text(encoding="utf-8"))
         return value if isinstance(value, list) else []
     except Exception:
         return []
@@ -203,14 +214,15 @@ def normalize_getsong_song(item: dict[str, Any], fallback_bpm: int) -> dict[str,
 def normalize_catalog_song(item: dict[str, Any]) -> dict[str, Any] | None:
     title = item.get("title")
     song_id = item.get("id")
-    artists = item.get("artists") or []
-    genres = item.get("genres") or []
+    artists = item.get("artists") or ([item.get("artist")] if item.get("artist") else [])
+    genres = item.get("genres") or ([item.get("genre")] if item.get("genre") else [])
     bpm = item.get("bpm")
+    effective_bpm = item.get("effectiveBpm") or bpm
 
-    if not title or not song_id or not artists or bpm is None:
+    if not title or not song_id or not artists or bpm is None or effective_bpm is None:
         return None
 
-    query = item.get("youtubeMusicQuery") or build_music_query(title, artists, int(bpm))
+    query = item.get("youtubeMusicQuery") or build_music_query(title, artists, int(effective_bpm))
     youtube_query = item.get("youtubeQuery") or query
 
     return {
@@ -219,12 +231,22 @@ def normalize_catalog_song(item: dict[str, Any]) -> dict[str, Any] | None:
         "title": title,
         "artists": artists,
         "genres": genres,
-        "durationText": f"{int(bpm)} BPM",
+        "subGenre": item.get("subGenre"),
+        "durationText": f"{int(effective_bpm)} BPM",
         "album": item.get("album"),
-        "thumbnailUrl": item.get("thumbnailUrl"),
+        "thumbnailUrl": item.get("thumbnailUrl") or item.get("coverImage") or None,
         "bpmHint": int(bpm),
+        "effectiveBpm": int(effective_bpm),
+        "cadenceTarget": item.get("cadenceTarget", int(effective_bpm)),
+        "cadenceMin": item.get("cadenceMin"),
+        "cadenceMax": item.get("cadenceMax"),
+        "energy": item.get("energy"),
+        "mood": item.get("mood") if isinstance(item.get("mood"), list) else [],
+        "runningZone": item.get("runningZone"),
+        "spotifyUrl": item.get("spotifyUrl"),
+        "tags": item.get("tags") if isinstance(item.get("tags"), list) else [],
         "query": query,
-        "musicUrl": make_music_url(query),
+        "musicUrl": item.get("youtubeMusicUrl") or make_music_url(query),
         "youtubeUrl": make_youtube_url(youtube_query),
     }
 
@@ -250,6 +272,8 @@ def normalize_ytmusic_song(item: dict[str, Any], bpm: int, query: str) -> dict[s
         "album": (item.get("album") or {}).get("name") if isinstance(item.get("album"), dict) else None,
         "thumbnailUrl": thumbnail_url,
         "bpmHint": bpm,
+        "effectiveBpm": bpm,
+        "cadenceTarget": bpm,
         "query": query,
         "musicUrl": f"https://music.youtube.com/watch?v={video_id}",
         "youtubeUrl": f"https://www.youtube.com/watch?v={video_id}",
@@ -462,6 +486,7 @@ def health():
             "ytmusicapi": True,
         },
         "catalogSize": len(load_catalog()),
+        "trainingSize": len(load_trainings()),
     }
 
 
@@ -493,6 +518,11 @@ def catalog(
     tolerance: int = Query(8, ge=0, le=20),
 ):
     return {"items": search_catalog_by_bpm(bpm, limit, genre, tolerance)}
+
+
+@app.get("/trainings")
+def trainings():
+    return {"items": load_trainings()}
 
 
 @app.get("/search/text")

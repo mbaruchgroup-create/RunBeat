@@ -2,501 +2,1973 @@
   {
     "id": "cat-can-t-hold-us",
     "title": "Can't Hold Us",
-    "artists": ["Macklemore & Ryan Lewis"],
+    "artist": "Macklemore & Ryan Lewis",
+    "artists": [
+      "Macklemore & Ryan Lewis"
+    ],
+    "genre": "hip hop",
+    "genres": [
+      "hip hop"
+    ],
+    "subGenre": "Workout Hip Hop",
     "bpm": 146,
-    "genres": ["hip hop"],
-    "album": null,
+    "effectiveBpm": 146,
+    "cadenceTarget": 146,
+    "cadenceMin": 142,
+    "cadenceMax": 150,
+    "energy": 7,
+    "mood": [
+      "Focused",
+      "Confident"
+    ],
+    "runningZone": "Warmup",
     "youtubeMusicQuery": "Can't Hold Us Macklemore & Ryan Lewis",
-    "youtubeQuery": "Can't Hold Us Macklemore & Ryan Lewis"
+    "youtubeQuery": "Can't Hold Us Macklemore & Ryan Lewis",
+    "youtubeMusicUrl": "https://music.youtube.com/search?q=Can't+Hold+Us+Macklemore+&+Ryan+Lewis",
+    "spotifyUrl": "",
+    "durationSeconds": null,
+    "isExplicit": false,
+    "coverImage": "",
+    "album": null,
+    "thumbnailUrl": null,
+    "tags": [
+      "hip_hop",
+      "warmup",
+      "controlled",
+      "runbeat"
+    ]
   },
   {
     "id": "cat-remember-the-name",
     "title": "Remember The Name",
-    "artists": ["Fort Minor"],
+    "artist": "Fort Minor",
+    "artists": [
+      "Fort Minor"
+    ],
+    "genre": "hip hop",
+    "genres": [
+      "hip hop"
+    ],
+    "subGenre": "Workout Hip Hop",
     "bpm": 148,
-    "genres": ["hip hop"],
-    "album": null,
+    "effectiveBpm": 148,
+    "cadenceTarget": 148,
+    "cadenceMin": 144,
+    "cadenceMax": 152,
+    "energy": 7,
+    "mood": [
+      "Focused",
+      "Confident"
+    ],
+    "runningZone": "Warmup",
     "youtubeMusicQuery": "Remember The Name Fort Minor",
-    "youtubeQuery": "Remember The Name Fort Minor"
+    "youtubeQuery": "Remember The Name Fort Minor",
+    "youtubeMusicUrl": "https://music.youtube.com/search?q=Remember+The+Name+Fort+Minor",
+    "spotifyUrl": "",
+    "durationSeconds": null,
+    "isExplicit": false,
+    "coverImage": "",
+    "album": null,
+    "thumbnailUrl": null,
+    "tags": [
+      "hip_hop",
+      "warmup",
+      "controlled",
+      "runbeat"
+    ]
   },
   {
     "id": "cat-till-i-collapse",
     "title": "Till I Collapse",
-    "artists": ["Eminem"],
+    "artist": "Eminem",
+    "artists": [
+      "Eminem"
+    ],
+    "genre": "hip hop",
+    "genres": [
+      "hip hop"
+    ],
+    "subGenre": "Workout Hip Hop",
     "bpm": 171,
-    "genres": ["hip hop"],
-    "album": null,
+    "effectiveBpm": 171,
+    "cadenceTarget": 171,
+    "cadenceMin": 167,
+    "cadenceMax": 175,
+    "energy": 9,
+    "mood": [
+      "Motivational",
+      "Aggressive",
+      "Confident"
+    ],
+    "runningZone": "Tempo Run",
     "youtubeMusicQuery": "Till I Collapse Eminem",
-    "youtubeQuery": "Till I Collapse Eminem"
+    "youtubeQuery": "Till I Collapse Eminem",
+    "youtubeMusicUrl": "https://music.youtube.com/search?q=Till+I+Collapse+Eminem",
+    "spotifyUrl": "",
+    "durationSeconds": null,
+    "isExplicit": false,
+    "coverImage": "",
+    "album": null,
+    "thumbnailUrl": null,
+    "tags": [
+      "hip_hop",
+      "tempo_run",
+      "tempo",
+      "runbeat"
+    ]
   },
   {
     "id": "cat-lose-yourself",
     "title": "Lose Yourself",
-    "artists": ["Eminem"],
+    "artist": "Eminem",
+    "artists": [
+      "Eminem"
+    ],
+    "genre": "hip hop",
+    "genres": [
+      "hip hop"
+    ],
+    "subGenre": "Workout Hip Hop",
     "bpm": 171,
-    "genres": ["hip hop"],
-    "album": null,
+    "effectiveBpm": 171,
+    "cadenceTarget": 171,
+    "cadenceMin": 167,
+    "cadenceMax": 175,
+    "energy": 9,
+    "mood": [
+      "Motivational",
+      "Aggressive",
+      "Confident"
+    ],
+    "runningZone": "Tempo Run",
     "youtubeMusicQuery": "Lose Yourself Eminem",
-    "youtubeQuery": "Lose Yourself Eminem"
+    "youtubeQuery": "Lose Yourself Eminem",
+    "youtubeMusicUrl": "https://music.youtube.com/search?q=Lose+Yourself+Eminem",
+    "spotifyUrl": "",
+    "durationSeconds": null,
+    "isExplicit": false,
+    "coverImage": "",
+    "album": null,
+    "thumbnailUrl": null,
+    "tags": [
+      "hip_hop",
+      "tempo_run",
+      "tempo",
+      "runbeat"
+    ]
   },
   {
     "id": "cat-stronger",
     "title": "Stronger",
-    "artists": ["Kanye West"],
+    "artist": "Kanye West",
+    "artists": [
+      "Kanye West"
+    ],
+    "genre": "hip hop",
+    "genres": [
+      "hip hop"
+    ],
+    "subGenre": "Workout Hip Hop",
     "bpm": 208,
-    "genres": ["hip hop"],
-    "album": null,
+    "effectiveBpm": 208,
+    "cadenceTarget": 208,
+    "cadenceMin": 204,
+    "cadenceMax": 208,
+    "energy": 10,
+    "mood": [
+      "Aggressive",
+      "Explosive",
+      "Confident"
+    ],
+    "runningZone": "Push",
     "youtubeMusicQuery": "Stronger Kanye West",
-    "youtubeQuery": "Stronger Kanye West"
+    "youtubeQuery": "Stronger Kanye West",
+    "youtubeMusicUrl": "https://music.youtube.com/search?q=Stronger+Kanye+West",
+    "spotifyUrl": "",
+    "durationSeconds": null,
+    "isExplicit": false,
+    "coverImage": "",
+    "album": null,
+    "thumbnailUrl": null,
+    "tags": [
+      "hip_hop",
+      "push",
+      "high_turnover",
+      "runbeat"
+    ]
   },
   {
     "id": "cat-industry-baby",
     "title": "Industry Baby",
-    "artists": ["Lil Nas X"],
+    "artist": "Lil Nas X",
+    "artists": [
+      "Lil Nas X"
+    ],
+    "genre": "hip hop",
+    "genres": [
+      "hip hop"
+    ],
+    "subGenre": "Workout Hip Hop",
     "bpm": 150,
-    "genres": ["hip hop"],
-    "album": null,
+    "effectiveBpm": 150,
+    "cadenceTarget": 150,
+    "cadenceMin": 146,
+    "cadenceMax": 154,
+    "energy": 7,
+    "mood": [
+      "Motivational",
+      "Confident"
+    ],
+    "runningZone": "Steady Run",
     "youtubeMusicQuery": "Industry Baby Lil Nas X",
-    "youtubeQuery": "Industry Baby Lil Nas X"
+    "youtubeQuery": "Industry Baby Lil Nas X",
+    "youtubeMusicUrl": "https://music.youtube.com/search?q=Industry+Baby+Lil+Nas+X",
+    "spotifyUrl": "",
+    "durationSeconds": null,
+    "isExplicit": false,
+    "coverImage": "",
+    "album": null,
+    "thumbnailUrl": null,
+    "tags": [
+      "hip_hop",
+      "steady_run",
+      "controlled",
+      "runbeat"
+    ]
   },
   {
     "id": "cat-power",
     "title": "POWER",
-    "artists": ["Kanye West"],
+    "artist": "Kanye West",
+    "artists": [
+      "Kanye West"
+    ],
+    "genre": "hip hop",
+    "genres": [
+      "hip hop"
+    ],
+    "subGenre": "Workout Hip Hop",
     "bpm": 154,
-    "genres": ["hip hop"],
-    "album": null,
+    "effectiveBpm": 154,
+    "cadenceTarget": 154,
+    "cadenceMin": 150,
+    "cadenceMax": 158,
+    "energy": 7,
+    "mood": [
+      "Motivational",
+      "Confident"
+    ],
+    "runningZone": "Steady Run",
     "youtubeMusicQuery": "POWER Kanye West",
-    "youtubeQuery": "POWER Kanye West"
+    "youtubeQuery": "POWER Kanye West",
+    "youtubeMusicUrl": "https://music.youtube.com/search?q=POWER+Kanye+West",
+    "spotifyUrl": "",
+    "durationSeconds": null,
+    "isExplicit": false,
+    "coverImage": "",
+    "album": null,
+    "thumbnailUrl": null,
+    "tags": [
+      "hip_hop",
+      "steady_run",
+      "controlled",
+      "runbeat"
+    ]
   },
   {
     "id": "cat-believer",
     "title": "Believer",
-    "artists": ["Imagine Dragons"],
+    "artist": "Imagine Dragons",
+    "artists": [
+      "Imagine Dragons"
+    ],
+    "genre": "rock",
+    "genres": [
+      "rock"
+    ],
+    "subGenre": "Alternative Rock",
     "bpm": 125,
-    "genres": ["rock"],
-    "album": null,
+    "effectiveBpm": 125,
+    "cadenceTarget": 125,
+    "cadenceMin": 121,
+    "cadenceMax": 129,
+    "energy": 6,
+    "mood": [
+      "Focused",
+      "Driven"
+    ],
+    "runningZone": "Warmup",
     "youtubeMusicQuery": "Believer Imagine Dragons",
-    "youtubeQuery": "Believer Imagine Dragons"
+    "youtubeQuery": "Believer Imagine Dragons",
+    "youtubeMusicUrl": "https://music.youtube.com/search?q=Believer+Imagine+Dragons",
+    "spotifyUrl": "",
+    "durationSeconds": null,
+    "isExplicit": false,
+    "coverImage": "",
+    "album": null,
+    "thumbnailUrl": null,
+    "tags": [
+      "rock",
+      "warmup",
+      "controlled",
+      "runbeat"
+    ]
   },
   {
     "id": "cat-warriors",
     "title": "Warriors",
-    "artists": ["Imagine Dragons"],
+    "artist": "Imagine Dragons",
+    "artists": [
+      "Imagine Dragons"
+    ],
+    "genre": "rock",
+    "genres": [
+      "rock"
+    ],
+    "subGenre": "Alternative Rock",
     "bpm": 157,
-    "genres": ["rock"],
-    "album": null,
+    "effectiveBpm": 157,
+    "cadenceTarget": 157,
+    "cadenceMin": 153,
+    "cadenceMax": 161,
+    "energy": 8,
+    "mood": [
+      "Motivational",
+      "Driven"
+    ],
+    "runningZone": "Steady Run",
     "youtubeMusicQuery": "Warriors Imagine Dragons",
-    "youtubeQuery": "Warriors Imagine Dragons"
+    "youtubeQuery": "Warriors Imagine Dragons",
+    "youtubeMusicUrl": "https://music.youtube.com/search?q=Warriors+Imagine+Dragons",
+    "spotifyUrl": "",
+    "durationSeconds": null,
+    "isExplicit": false,
+    "coverImage": "",
+    "album": null,
+    "thumbnailUrl": null,
+    "tags": [
+      "rock",
+      "steady_run",
+      "controlled",
+      "runbeat"
+    ]
   },
   {
     "id": "cat-radioactive",
     "title": "Radioactive",
-    "artists": ["Imagine Dragons"],
+    "artist": "Imagine Dragons",
+    "artists": [
+      "Imagine Dragons"
+    ],
+    "genre": "rock",
+    "genres": [
+      "rock"
+    ],
+    "subGenre": "Alternative Rock",
     "bpm": 136,
-    "genres": ["rock"],
-    "album": null,
+    "effectiveBpm": 136,
+    "cadenceTarget": 136,
+    "cadenceMin": 132,
+    "cadenceMax": 140,
+    "energy": 6,
+    "mood": [
+      "Focused",
+      "Driven"
+    ],
+    "runningZone": "Warmup",
     "youtubeMusicQuery": "Radioactive Imagine Dragons",
-    "youtubeQuery": "Radioactive Imagine Dragons"
+    "youtubeQuery": "Radioactive Imagine Dragons",
+    "youtubeMusicUrl": "https://music.youtube.com/search?q=Radioactive+Imagine+Dragons",
+    "spotifyUrl": "",
+    "durationSeconds": null,
+    "isExplicit": false,
+    "coverImage": "",
+    "album": null,
+    "thumbnailUrl": null,
+    "tags": [
+      "rock",
+      "warmup",
+      "controlled",
+      "runbeat"
+    ]
   },
   {
     "id": "cat-the-pretender",
     "title": "The Pretender",
-    "artists": ["Foo Fighters"],
+    "artist": "Foo Fighters",
+    "artists": [
+      "Foo Fighters"
+    ],
+    "genre": "rock",
+    "genres": [
+      "rock"
+    ],
+    "subGenre": "Alternative Rock",
     "bpm": 172,
-    "genres": ["rock"],
-    "album": null,
+    "effectiveBpm": 172,
+    "cadenceTarget": 172,
+    "cadenceMin": 168,
+    "cadenceMax": 176,
+    "energy": 9,
+    "mood": [
+      "Motivational",
+      "Aggressive",
+      "Driven"
+    ],
+    "runningZone": "Tempo Run",
     "youtubeMusicQuery": "The Pretender Foo Fighters",
-    "youtubeQuery": "The Pretender Foo Fighters"
+    "youtubeQuery": "The Pretender Foo Fighters",
+    "youtubeMusicUrl": "https://music.youtube.com/search?q=The+Pretender+Foo+Fighters",
+    "spotifyUrl": "",
+    "durationSeconds": null,
+    "isExplicit": false,
+    "coverImage": "",
+    "album": null,
+    "thumbnailUrl": null,
+    "tags": [
+      "rock",
+      "tempo_run",
+      "tempo",
+      "runbeat"
+    ]
   },
   {
     "id": "cat-monkey-wrench",
     "title": "Monkey Wrench",
-    "artists": ["Foo Fighters"],
+    "artist": "Foo Fighters",
+    "artists": [
+      "Foo Fighters"
+    ],
+    "genre": "rock",
+    "genres": [
+      "rock"
+    ],
+    "subGenre": "Alternative Rock",
     "bpm": 174,
-    "genres": ["rock"],
-    "album": null,
+    "effectiveBpm": 174,
+    "cadenceTarget": 174,
+    "cadenceMin": 170,
+    "cadenceMax": 178,
+    "energy": 9,
+    "mood": [
+      "Motivational",
+      "Aggressive",
+      "Driven"
+    ],
+    "runningZone": "Tempo Run",
     "youtubeMusicQuery": "Monkey Wrench Foo Fighters",
-    "youtubeQuery": "Monkey Wrench Foo Fighters"
+    "youtubeQuery": "Monkey Wrench Foo Fighters",
+    "youtubeMusicUrl": "https://music.youtube.com/search?q=Monkey+Wrench+Foo+Fighters",
+    "spotifyUrl": "",
+    "durationSeconds": null,
+    "isExplicit": false,
+    "coverImage": "",
+    "album": null,
+    "thumbnailUrl": null,
+    "tags": [
+      "rock",
+      "tempo_run",
+      "tempo",
+      "runbeat"
+    ]
   },
   {
     "id": "cat-best-of-you",
     "title": "Best Of You",
-    "artists": ["Foo Fighters"],
+    "artist": "Foo Fighters",
+    "artists": [
+      "Foo Fighters"
+    ],
+    "genre": "rock",
+    "genres": [
+      "rock"
+    ],
+    "subGenre": "Alternative Rock",
     "bpm": 130,
-    "genres": ["rock"],
-    "album": null,
+    "effectiveBpm": 130,
+    "cadenceTarget": 130,
+    "cadenceMin": 126,
+    "cadenceMax": 134,
+    "energy": 6,
+    "mood": [
+      "Focused",
+      "Driven"
+    ],
+    "runningZone": "Warmup",
     "youtubeMusicQuery": "Best Of You Foo Fighters",
-    "youtubeQuery": "Best Of You Foo Fighters"
+    "youtubeQuery": "Best Of You Foo Fighters",
+    "youtubeMusicUrl": "https://music.youtube.com/search?q=Best+Of+You+Foo+Fighters",
+    "spotifyUrl": "",
+    "durationSeconds": null,
+    "isExplicit": false,
+    "coverImage": "",
+    "album": null,
+    "thumbnailUrl": null,
+    "tags": [
+      "rock",
+      "warmup",
+      "controlled",
+      "runbeat"
+    ]
   },
   {
     "id": "cat-all-my-life",
     "title": "All My Life",
-    "artists": ["Foo Fighters"],
+    "artist": "Foo Fighters",
+    "artists": [
+      "Foo Fighters"
+    ],
+    "genre": "rock",
+    "genres": [
+      "rock"
+    ],
+    "subGenre": "Alternative Rock",
     "bpm": 167,
-    "genres": ["rock"],
-    "album": null,
+    "effectiveBpm": 167,
+    "cadenceTarget": 167,
+    "cadenceMin": 163,
+    "cadenceMax": 171,
+    "energy": 8,
+    "mood": [
+      "Motivational",
+      "Aggressive",
+      "Driven"
+    ],
+    "runningZone": "Tempo Run",
     "youtubeMusicQuery": "All My Life Foo Fighters",
-    "youtubeQuery": "All My Life Foo Fighters"
+    "youtubeQuery": "All My Life Foo Fighters",
+    "youtubeMusicUrl": "https://music.youtube.com/search?q=All+My+Life+Foo+Fighters",
+    "spotifyUrl": "",
+    "durationSeconds": null,
+    "isExplicit": false,
+    "coverImage": "",
+    "album": null,
+    "thumbnailUrl": null,
+    "tags": [
+      "rock",
+      "tempo_run",
+      "tempo",
+      "runbeat"
+    ]
   },
   {
     "id": "cat-american-idiot",
     "title": "American Idiot",
-    "artists": ["Green Day"],
+    "artist": "Green Day",
+    "artists": [
+      "Green Day"
+    ],
+    "genre": "rock",
+    "genres": [
+      "rock"
+    ],
+    "subGenre": "Alternative Rock",
     "bpm": 186,
-    "genres": ["rock"],
-    "album": null,
+    "effectiveBpm": 186,
+    "cadenceTarget": 186,
+    "cadenceMin": 182,
+    "cadenceMax": 190,
+    "energy": 10,
+    "mood": [
+      "Aggressive",
+      "Explosive",
+      "Driven"
+    ],
+    "runningZone": "Push",
     "youtubeMusicQuery": "American Idiot Green Day",
-    "youtubeQuery": "American Idiot Green Day"
+    "youtubeQuery": "American Idiot Green Day",
+    "youtubeMusicUrl": "https://music.youtube.com/search?q=American+Idiot+Green+Day",
+    "spotifyUrl": "",
+    "durationSeconds": null,
+    "isExplicit": false,
+    "coverImage": "",
+    "album": null,
+    "thumbnailUrl": null,
+    "tags": [
+      "rock",
+      "push",
+      "high_turnover",
+      "runbeat"
+    ]
   },
   {
     "id": "cat-basket-case",
     "title": "Basket Case",
-    "artists": ["Green Day"],
+    "artist": "Green Day",
+    "artists": [
+      "Green Day"
+    ],
+    "genre": "rock",
+    "genres": [
+      "rock"
+    ],
+    "subGenre": "Alternative Rock",
     "bpm": 176,
-    "genres": ["rock"],
-    "album": null,
+    "effectiveBpm": 176,
+    "cadenceTarget": 176,
+    "cadenceMin": 172,
+    "cadenceMax": 180,
+    "energy": 9,
+    "mood": [
+      "Motivational",
+      "Aggressive",
+      "Driven"
+    ],
+    "runningZone": "Tempo Run",
     "youtubeMusicQuery": "Basket Case Green Day",
-    "youtubeQuery": "Basket Case Green Day"
+    "youtubeQuery": "Basket Case Green Day",
+    "youtubeMusicUrl": "https://music.youtube.com/search?q=Basket+Case+Green+Day",
+    "spotifyUrl": "",
+    "durationSeconds": null,
+    "isExplicit": false,
+    "coverImage": "",
+    "album": null,
+    "thumbnailUrl": null,
+    "tags": [
+      "rock",
+      "tempo_run",
+      "high_turnover",
+      "runbeat"
+    ]
   },
   {
     "id": "cat-holiday",
     "title": "Holiday",
-    "artists": ["Green Day"],
+    "artist": "Green Day",
+    "artists": [
+      "Green Day"
+    ],
+    "genre": "rock",
+    "genres": [
+      "rock"
+    ],
+    "subGenre": "Alternative Rock",
     "bpm": 146,
-    "genres": ["rock"],
-    "album": null,
+    "effectiveBpm": 146,
+    "cadenceTarget": 146,
+    "cadenceMin": 142,
+    "cadenceMax": 150,
+    "energy": 7,
+    "mood": [
+      "Focused",
+      "Driven"
+    ],
+    "runningZone": "Warmup",
     "youtubeMusicQuery": "Holiday Green Day",
-    "youtubeQuery": "Holiday Green Day"
+    "youtubeQuery": "Holiday Green Day",
+    "youtubeMusicUrl": "https://music.youtube.com/search?q=Holiday+Green+Day",
+    "spotifyUrl": "",
+    "durationSeconds": null,
+    "isExplicit": false,
+    "coverImage": "",
+    "album": null,
+    "thumbnailUrl": null,
+    "tags": [
+      "rock",
+      "warmup",
+      "controlled",
+      "runbeat"
+    ]
   },
   {
     "id": "cat-the-kids-aren-t-alright",
     "title": "The Kids Aren't Alright",
-    "artists": ["The Offspring"],
+    "artist": "The Offspring",
+    "artists": [
+      "The Offspring"
+    ],
+    "genre": "rock",
+    "genres": [
+      "rock"
+    ],
+    "subGenre": "Alternative Rock",
     "bpm": 160,
-    "genres": ["rock"],
-    "album": null,
+    "effectiveBpm": 160,
+    "cadenceTarget": 160,
+    "cadenceMin": 156,
+    "cadenceMax": 164,
+    "energy": 8,
+    "mood": [
+      "Motivational",
+      "Driven"
+    ],
+    "runningZone": "Steady Run",
     "youtubeMusicQuery": "The Kids Aren't Alright The Offspring",
-    "youtubeQuery": "The Kids Aren't Alright The Offspring"
+    "youtubeQuery": "The Kids Aren't Alright The Offspring",
+    "youtubeMusicUrl": "https://music.youtube.com/search?q=The+Kids+Aren't+Alright+The+Offspring",
+    "spotifyUrl": "",
+    "durationSeconds": null,
+    "isExplicit": false,
+    "coverImage": "",
+    "album": null,
+    "thumbnailUrl": null,
+    "tags": [
+      "rock",
+      "steady_run",
+      "tempo",
+      "runbeat"
+    ]
   },
   {
     "id": "cat-you-re-gonna-go-far-kid",
     "title": "You're Gonna Go Far Kid",
-    "artists": ["The Offspring"],
+    "artist": "The Offspring",
+    "artists": [
+      "The Offspring"
+    ],
+    "genre": "rock",
+    "genres": [
+      "rock"
+    ],
+    "subGenre": "Alternative Rock",
     "bpm": 173,
-    "genres": ["rock"],
-    "album": null,
+    "effectiveBpm": 173,
+    "cadenceTarget": 173,
+    "cadenceMin": 169,
+    "cadenceMax": 177,
+    "energy": 9,
+    "mood": [
+      "Motivational",
+      "Aggressive",
+      "Driven"
+    ],
+    "runningZone": "Tempo Run",
     "youtubeMusicQuery": "You're Gonna Go Far Kid The Offspring",
-    "youtubeQuery": "You're Gonna Go Far Kid The Offspring"
+    "youtubeQuery": "You're Gonna Go Far Kid The Offspring",
+    "youtubeMusicUrl": "https://music.youtube.com/search?q=You're+Gonna+Go+Far+Kid+The+Offspring",
+    "spotifyUrl": "",
+    "durationSeconds": null,
+    "isExplicit": false,
+    "coverImage": "",
+    "album": null,
+    "thumbnailUrl": null,
+    "tags": [
+      "rock",
+      "tempo_run",
+      "tempo",
+      "runbeat"
+    ]
   },
   {
     "id": "cat-self-esteem",
     "title": "Self Esteem",
-    "artists": ["The Offspring"],
+    "artist": "The Offspring",
+    "artists": [
+      "The Offspring"
+    ],
+    "genre": "rock",
+    "genres": [
+      "rock"
+    ],
+    "subGenre": "Alternative Rock",
     "bpm": 167,
-    "genres": ["rock"],
-    "album": null,
+    "effectiveBpm": 167,
+    "cadenceTarget": 167,
+    "cadenceMin": 163,
+    "cadenceMax": 171,
+    "energy": 8,
+    "mood": [
+      "Motivational",
+      "Aggressive",
+      "Driven"
+    ],
+    "runningZone": "Tempo Run",
     "youtubeMusicQuery": "Self Esteem The Offspring",
-    "youtubeQuery": "Self Esteem The Offspring"
+    "youtubeQuery": "Self Esteem The Offspring",
+    "youtubeMusicUrl": "https://music.youtube.com/search?q=Self+Esteem+The+Offspring",
+    "spotifyUrl": "",
+    "durationSeconds": null,
+    "isExplicit": false,
+    "coverImage": "",
+    "album": null,
+    "thumbnailUrl": null,
+    "tags": [
+      "rock",
+      "tempo_run",
+      "tempo",
+      "runbeat"
+    ]
   },
   {
     "id": "cat-in-the-end",
     "title": "In The End",
-    "artists": ["Linkin Park"],
+    "artist": "Linkin Park",
+    "artists": [
+      "Linkin Park"
+    ],
+    "genre": "rock",
+    "genres": [
+      "rock"
+    ],
+    "subGenre": "Alternative Rock",
     "bpm": 210,
-    "genres": ["rock"],
-    "album": null,
+    "effectiveBpm": 210,
+    "cadenceTarget": 210,
+    "cadenceMin": 206,
+    "cadenceMax": 208,
+    "energy": 10,
+    "mood": [
+      "Aggressive",
+      "Explosive",
+      "Driven"
+    ],
+    "runningZone": "Push",
     "youtubeMusicQuery": "In The End Linkin Park",
-    "youtubeQuery": "In The End Linkin Park"
+    "youtubeQuery": "In The End Linkin Park",
+    "youtubeMusicUrl": "https://music.youtube.com/search?q=In+The+End+Linkin+Park",
+    "spotifyUrl": "",
+    "durationSeconds": null,
+    "isExplicit": false,
+    "coverImage": "",
+    "album": null,
+    "thumbnailUrl": null,
+    "tags": [
+      "rock",
+      "push",
+      "high_turnover",
+      "runbeat"
+    ]
   },
   {
     "id": "cat-faint",
     "title": "Faint",
-    "artists": ["Linkin Park"],
+    "artist": "Linkin Park",
+    "artists": [
+      "Linkin Park"
+    ],
+    "genre": "rock",
+    "genres": [
+      "rock"
+    ],
+    "subGenre": "Alternative Rock",
     "bpm": 270,
-    "genres": ["rock"],
-    "album": null,
+    "effectiveBpm": 135,
+    "cadenceTarget": 135,
+    "cadenceMin": 131,
+    "cadenceMax": 139,
+    "energy": 6,
+    "mood": [
+      "Focused",
+      "Driven"
+    ],
+    "runningZone": "Warmup",
     "youtubeMusicQuery": "Faint Linkin Park",
-    "youtubeQuery": "Faint Linkin Park"
+    "youtubeQuery": "Faint Linkin Park",
+    "youtubeMusicUrl": "https://music.youtube.com/search?q=Faint+Linkin+Park",
+    "spotifyUrl": "",
+    "durationSeconds": null,
+    "isExplicit": false,
+    "coverImage": "",
+    "album": null,
+    "thumbnailUrl": null,
+    "tags": [
+      "rock",
+      "warmup",
+      "controlled",
+      "runbeat"
+    ]
   },
   {
     "id": "cat-bleed-it-out",
     "title": "Bleed It Out",
-    "artists": ["Linkin Park"],
+    "artist": "Linkin Park",
+    "artists": [
+      "Linkin Park"
+    ],
+    "genre": "rock",
+    "genres": [
+      "rock"
+    ],
+    "subGenre": "Alternative Rock",
     "bpm": 148,
-    "genres": ["rock"],
-    "album": null,
+    "effectiveBpm": 148,
+    "cadenceTarget": 148,
+    "cadenceMin": 144,
+    "cadenceMax": 152,
+    "energy": 7,
+    "mood": [
+      "Focused",
+      "Driven"
+    ],
+    "runningZone": "Warmup",
     "youtubeMusicQuery": "Bleed It Out Linkin Park",
-    "youtubeQuery": "Bleed It Out Linkin Park"
+    "youtubeQuery": "Bleed It Out Linkin Park",
+    "youtubeMusicUrl": "https://music.youtube.com/search?q=Bleed+It+Out+Linkin+Park",
+    "spotifyUrl": "",
+    "durationSeconds": null,
+    "isExplicit": false,
+    "coverImage": "",
+    "album": null,
+    "thumbnailUrl": null,
+    "tags": [
+      "rock",
+      "warmup",
+      "controlled",
+      "runbeat"
+    ]
   },
   {
     "id": "cat-given-up",
     "title": "Given Up",
-    "artists": ["Linkin Park"],
+    "artist": "Linkin Park",
+    "artists": [
+      "Linkin Park"
+    ],
+    "genre": "rock",
+    "genres": [
+      "rock"
+    ],
+    "subGenre": "Alternative Rock",
     "bpm": 190,
-    "genres": ["rock"],
-    "album": null,
+    "effectiveBpm": 190,
+    "cadenceTarget": 190,
+    "cadenceMin": 186,
+    "cadenceMax": 194,
+    "energy": 10,
+    "mood": [
+      "Aggressive",
+      "Explosive",
+      "Driven"
+    ],
+    "runningZone": "Push",
     "youtubeMusicQuery": "Given Up Linkin Park",
-    "youtubeQuery": "Given Up Linkin Park"
+    "youtubeQuery": "Given Up Linkin Park",
+    "youtubeMusicUrl": "https://music.youtube.com/search?q=Given+Up+Linkin+Park",
+    "spotifyUrl": "",
+    "durationSeconds": null,
+    "isExplicit": false,
+    "coverImage": "",
+    "album": null,
+    "thumbnailUrl": null,
+    "tags": [
+      "rock",
+      "push",
+      "high_turnover",
+      "runbeat"
+    ]
   },
   {
     "id": "cat-numb",
     "title": "Numb",
-    "artists": ["Linkin Park"],
+    "artist": "Linkin Park",
+    "artists": [
+      "Linkin Park"
+    ],
+    "genre": "rock",
+    "genres": [
+      "rock"
+    ],
+    "subGenre": "Alternative Rock",
     "bpm": 220,
-    "genres": ["rock"],
-    "album": null,
+    "effectiveBpm": 220,
+    "cadenceTarget": 220,
+    "cadenceMin": 216,
+    "cadenceMax": 208,
+    "energy": 10,
+    "mood": [
+      "Aggressive",
+      "Explosive",
+      "Driven"
+    ],
+    "runningZone": "Push",
     "youtubeMusicQuery": "Numb Linkin Park",
-    "youtubeQuery": "Numb Linkin Park"
+    "youtubeQuery": "Numb Linkin Park",
+    "youtubeMusicUrl": "https://music.youtube.com/search?q=Numb+Linkin+Park",
+    "spotifyUrl": "",
+    "durationSeconds": null,
+    "isExplicit": false,
+    "coverImage": "",
+    "album": null,
+    "thumbnailUrl": null,
+    "tags": [
+      "rock",
+      "push",
+      "high_turnover",
+      "runbeat"
+    ]
   },
   {
     "id": "cat-chop-suey",
     "title": "Chop Suey!",
-    "artists": ["System Of A Down"],
+    "artist": "System Of A Down",
+    "artists": [
+      "System Of A Down"
+    ],
+    "genre": "metal",
+    "genres": [
+      "metal"
+    ],
+    "subGenre": "Heavy Metal",
     "bpm": 254,
-    "genres": ["metal"],
-    "album": null,
+    "effectiveBpm": 127,
+    "cadenceTarget": 127,
+    "cadenceMin": 123,
+    "cadenceMax": 131,
+    "energy": 6,
+    "mood": [
+      "Focused",
+      "Intense"
+    ],
+    "runningZone": "Warmup",
     "youtubeMusicQuery": "Chop Suey! System Of A Down",
-    "youtubeQuery": "Chop Suey! System Of A Down"
+    "youtubeQuery": "Chop Suey! System Of A Down",
+    "youtubeMusicUrl": "https://music.youtube.com/search?q=Chop+Suey!+System+Of+A+Down",
+    "spotifyUrl": "",
+    "durationSeconds": null,
+    "isExplicit": false,
+    "coverImage": "",
+    "album": null,
+    "thumbnailUrl": null,
+    "tags": [
+      "metal",
+      "warmup",
+      "controlled",
+      "runbeat"
+    ]
   },
   {
     "id": "cat-toxicity",
     "title": "Toxicity",
-    "artists": ["System Of A Down"],
+    "artist": "System Of A Down",
+    "artists": [
+      "System Of A Down"
+    ],
+    "genre": "metal",
+    "genres": [
+      "metal"
+    ],
+    "subGenre": "Heavy Metal",
     "bpm": 143,
-    "genres": ["metal"],
-    "album": null,
+    "effectiveBpm": 143,
+    "cadenceTarget": 143,
+    "cadenceMin": 139,
+    "cadenceMax": 147,
+    "energy": 7,
+    "mood": [
+      "Focused",
+      "Intense"
+    ],
+    "runningZone": "Warmup",
     "youtubeMusicQuery": "Toxicity System Of A Down",
-    "youtubeQuery": "Toxicity System Of A Down"
+    "youtubeQuery": "Toxicity System Of A Down",
+    "youtubeMusicUrl": "https://music.youtube.com/search?q=Toxicity+System+Of+A+Down",
+    "spotifyUrl": "",
+    "durationSeconds": null,
+    "isExplicit": false,
+    "coverImage": "",
+    "album": null,
+    "thumbnailUrl": null,
+    "tags": [
+      "metal",
+      "warmup",
+      "controlled",
+      "runbeat"
+    ]
   },
   {
     "id": "cat-down-with-the-sickness",
     "title": "Down With The Sickness",
-    "artists": ["Disturbed"],
+    "artist": "Disturbed",
+    "artists": [
+      "Disturbed"
+    ],
+    "genre": "metal",
+    "genres": [
+      "metal"
+    ],
+    "subGenre": "Heavy Metal",
     "bpm": 180,
-    "genres": ["metal"],
-    "album": null,
+    "effectiveBpm": 180,
+    "cadenceTarget": 180,
+    "cadenceMin": 176,
+    "cadenceMax": 184,
+    "energy": 9,
+    "mood": [
+      "Aggressive",
+      "Explosive",
+      "Intense"
+    ],
+    "runningZone": "Push",
     "youtubeMusicQuery": "Down With The Sickness Disturbed",
-    "youtubeQuery": "Down With The Sickness Disturbed"
+    "youtubeQuery": "Down With The Sickness Disturbed",
+    "youtubeMusicUrl": "https://music.youtube.com/search?q=Down+With+The+Sickness+Disturbed",
+    "spotifyUrl": "",
+    "durationSeconds": null,
+    "isExplicit": false,
+    "coverImage": "",
+    "album": null,
+    "thumbnailUrl": null,
+    "tags": [
+      "metal",
+      "push",
+      "high_turnover",
+      "runbeat"
+    ]
   },
   {
     "id": "cat-indestructible",
     "title": "Indestructible",
-    "artists": ["Disturbed"],
+    "artist": "Disturbed",
+    "artists": [
+      "Disturbed"
+    ],
+    "genre": "metal",
+    "genres": [
+      "metal"
+    ],
+    "subGenre": "Heavy Metal",
     "bpm": 140,
-    "genres": ["metal"],
-    "album": null,
+    "effectiveBpm": 140,
+    "cadenceTarget": 140,
+    "cadenceMin": 136,
+    "cadenceMax": 144,
+    "energy": 6,
+    "mood": [
+      "Focused",
+      "Intense"
+    ],
+    "runningZone": "Warmup",
     "youtubeMusicQuery": "Indestructible Disturbed",
-    "youtubeQuery": "Indestructible Disturbed"
+    "youtubeQuery": "Indestructible Disturbed",
+    "youtubeMusicUrl": "https://music.youtube.com/search?q=Indestructible+Disturbed",
+    "spotifyUrl": "",
+    "durationSeconds": null,
+    "isExplicit": false,
+    "coverImage": "",
+    "album": null,
+    "thumbnailUrl": null,
+    "tags": [
+      "metal",
+      "warmup",
+      "controlled",
+      "runbeat"
+    ]
   },
   {
     "id": "cat-hail-to-the-king",
     "title": "Hail To The King",
-    "artists": ["Avenged Sevenfold"],
+    "artist": "Avenged Sevenfold",
+    "artists": [
+      "Avenged Sevenfold"
+    ],
+    "genre": "metal",
+    "genres": [
+      "metal"
+    ],
+    "subGenre": "Heavy Metal",
     "bpm": 118,
-    "genres": ["metal"],
-    "album": null,
+    "effectiveBpm": 118,
+    "cadenceTarget": 118,
+    "cadenceMin": 117,
+    "cadenceMax": 122,
+    "energy": 6,
+    "mood": [
+      "Focused",
+      "Intense"
+    ],
+    "runningZone": "Warmup",
     "youtubeMusicQuery": "Hail To The King Avenged Sevenfold",
-    "youtubeQuery": "Hail To The King Avenged Sevenfold"
+    "youtubeQuery": "Hail To The King Avenged Sevenfold",
+    "youtubeMusicUrl": "https://music.youtube.com/search?q=Hail+To+The+King+Avenged+Sevenfold",
+    "spotifyUrl": "",
+    "durationSeconds": null,
+    "isExplicit": false,
+    "coverImage": "",
+    "album": null,
+    "thumbnailUrl": null,
+    "tags": [
+      "metal",
+      "warmup",
+      "controlled",
+      "runbeat"
+    ]
   },
   {
     "id": "cat-nightmare",
     "title": "Nightmare",
-    "artists": ["Avenged Sevenfold"],
+    "artist": "Avenged Sevenfold",
+    "artists": [
+      "Avenged Sevenfold"
+    ],
+    "genre": "metal",
+    "genres": [
+      "metal"
+    ],
+    "subGenre": "Heavy Metal",
     "bpm": 170,
-    "genres": ["metal"],
-    "album": null,
+    "effectiveBpm": 170,
+    "cadenceTarget": 170,
+    "cadenceMin": 166,
+    "cadenceMax": 174,
+    "energy": 8,
+    "mood": [
+      "Motivational",
+      "Aggressive",
+      "Intense"
+    ],
+    "runningZone": "Tempo Run",
     "youtubeMusicQuery": "Nightmare Avenged Sevenfold",
-    "youtubeQuery": "Nightmare Avenged Sevenfold"
+    "youtubeQuery": "Nightmare Avenged Sevenfold",
+    "youtubeMusicUrl": "https://music.youtube.com/search?q=Nightmare+Avenged+Sevenfold",
+    "spotifyUrl": "",
+    "durationSeconds": null,
+    "isExplicit": false,
+    "coverImage": "",
+    "album": null,
+    "thumbnailUrl": null,
+    "tags": [
+      "metal",
+      "tempo_run",
+      "tempo",
+      "runbeat"
+    ]
   },
   {
     "id": "cat-through-the-fire-and-flames",
     "title": "Through The Fire And Flames",
-    "artists": ["DragonForce"],
+    "artist": "DragonForce",
+    "artists": [
+      "DragonForce"
+    ],
+    "genre": "metal",
+    "genres": [
+      "metal"
+    ],
+    "subGenre": "Heavy Metal",
     "bpm": 200,
-    "genres": ["metal"],
-    "album": null,
+    "effectiveBpm": 200,
+    "cadenceTarget": 200,
+    "cadenceMin": 196,
+    "cadenceMax": 204,
+    "energy": 10,
+    "mood": [
+      "Aggressive",
+      "Explosive",
+      "Intense"
+    ],
+    "runningZone": "Push",
     "youtubeMusicQuery": "Through The Fire And Flames DragonForce",
-    "youtubeQuery": "Through The Fire And Flames DragonForce"
+    "youtubeQuery": "Through The Fire And Flames DragonForce",
+    "youtubeMusicUrl": "https://music.youtube.com/search?q=Through+The+Fire+And+Flames+DragonForce",
+    "spotifyUrl": "",
+    "durationSeconds": null,
+    "isExplicit": false,
+    "coverImage": "",
+    "album": null,
+    "thumbnailUrl": null,
+    "tags": [
+      "metal",
+      "push",
+      "high_turnover",
+      "runbeat"
+    ]
   },
   {
     "id": "cat-fear-of-the-dark",
     "title": "Fear Of The Dark",
-    "artists": ["Iron Maiden"],
+    "artist": "Iron Maiden",
+    "artists": [
+      "Iron Maiden"
+    ],
+    "genre": "metal",
+    "genres": [
+      "metal"
+    ],
+    "subGenre": "Heavy Metal",
     "bpm": 174,
-    "genres": ["metal"],
-    "album": null,
+    "effectiveBpm": 174,
+    "cadenceTarget": 174,
+    "cadenceMin": 170,
+    "cadenceMax": 178,
+    "energy": 9,
+    "mood": [
+      "Motivational",
+      "Aggressive",
+      "Intense"
+    ],
+    "runningZone": "Tempo Run",
     "youtubeMusicQuery": "Fear Of The Dark Iron Maiden",
-    "youtubeQuery": "Fear Of The Dark Iron Maiden"
+    "youtubeQuery": "Fear Of The Dark Iron Maiden",
+    "youtubeMusicUrl": "https://music.youtube.com/search?q=Fear+Of+The+Dark+Iron+Maiden",
+    "spotifyUrl": "",
+    "durationSeconds": null,
+    "isExplicit": false,
+    "coverImage": "",
+    "album": null,
+    "thumbnailUrl": null,
+    "tags": [
+      "metal",
+      "tempo_run",
+      "tempo",
+      "runbeat"
+    ]
   },
   {
     "id": "cat-the-trooper",
     "title": "The Trooper",
-    "artists": ["Iron Maiden"],
+    "artist": "Iron Maiden",
+    "artists": [
+      "Iron Maiden"
+    ],
+    "genre": "metal",
+    "genres": [
+      "metal"
+    ],
+    "subGenre": "Heavy Metal",
     "bpm": 160,
-    "genres": ["metal"],
-    "album": null,
+    "effectiveBpm": 160,
+    "cadenceTarget": 160,
+    "cadenceMin": 156,
+    "cadenceMax": 164,
+    "energy": 8,
+    "mood": [
+      "Motivational",
+      "Intense"
+    ],
+    "runningZone": "Steady Run",
     "youtubeMusicQuery": "The Trooper Iron Maiden",
-    "youtubeQuery": "The Trooper Iron Maiden"
+    "youtubeQuery": "The Trooper Iron Maiden",
+    "youtubeMusicUrl": "https://music.youtube.com/search?q=The+Trooper+Iron+Maiden",
+    "spotifyUrl": "",
+    "durationSeconds": null,
+    "isExplicit": false,
+    "coverImage": "",
+    "album": null,
+    "thumbnailUrl": null,
+    "tags": [
+      "metal",
+      "steady_run",
+      "tempo",
+      "runbeat"
+    ]
   },
   {
     "id": "cat-run-to-the-hills",
     "title": "Run To The Hills",
-    "artists": ["Iron Maiden"],
+    "artist": "Iron Maiden",
+    "artists": [
+      "Iron Maiden"
+    ],
+    "genre": "metal",
+    "genres": [
+      "metal"
+    ],
+    "subGenre": "Heavy Metal",
     "bpm": 173,
-    "genres": ["metal"],
-    "album": null,
+    "effectiveBpm": 173,
+    "cadenceTarget": 173,
+    "cadenceMin": 169,
+    "cadenceMax": 177,
+    "energy": 9,
+    "mood": [
+      "Motivational",
+      "Aggressive",
+      "Intense"
+    ],
+    "runningZone": "Tempo Run",
     "youtubeMusicQuery": "Run To The Hills Iron Maiden",
-    "youtubeQuery": "Run To The Hills Iron Maiden"
+    "youtubeQuery": "Run To The Hills Iron Maiden",
+    "youtubeMusicUrl": "https://music.youtube.com/search?q=Run+To+The+Hills+Iron+Maiden",
+    "spotifyUrl": "",
+    "durationSeconds": null,
+    "isExplicit": false,
+    "coverImage": "",
+    "album": null,
+    "thumbnailUrl": null,
+    "tags": [
+      "metal",
+      "tempo_run",
+      "tempo",
+      "runbeat"
+    ]
   },
   {
     "id": "cat-master-of-puppets",
     "title": "Master Of Puppets",
-    "artists": ["Metallica"],
+    "artist": "Metallica",
+    "artists": [
+      "Metallica"
+    ],
+    "genre": "metal",
+    "genres": [
+      "metal"
+    ],
+    "subGenre": "Heavy Metal",
     "bpm": 212,
-    "genres": ["metal"],
-    "album": null,
+    "effectiveBpm": 212,
+    "cadenceTarget": 212,
+    "cadenceMin": 208,
+    "cadenceMax": 208,
+    "energy": 10,
+    "mood": [
+      "Aggressive",
+      "Explosive",
+      "Intense"
+    ],
+    "runningZone": "Push",
     "youtubeMusicQuery": "Master Of Puppets Metallica",
-    "youtubeQuery": "Master Of Puppets Metallica"
+    "youtubeQuery": "Master Of Puppets Metallica",
+    "youtubeMusicUrl": "https://music.youtube.com/search?q=Master+Of+Puppets+Metallica",
+    "spotifyUrl": "",
+    "durationSeconds": null,
+    "isExplicit": false,
+    "coverImage": "",
+    "album": null,
+    "thumbnailUrl": null,
+    "tags": [
+      "metal",
+      "push",
+      "high_turnover",
+      "runbeat"
+    ]
   },
   {
     "id": "cat-fuel",
     "title": "Fuel",
-    "artists": ["Metallica"],
+    "artist": "Metallica",
+    "artists": [
+      "Metallica"
+    ],
+    "genre": "metal",
+    "genres": [
+      "metal"
+    ],
+    "subGenre": "Heavy Metal",
     "bpm": 184,
-    "genres": ["metal"],
-    "album": null,
+    "effectiveBpm": 184,
+    "cadenceTarget": 184,
+    "cadenceMin": 180,
+    "cadenceMax": 188,
+    "energy": 9,
+    "mood": [
+      "Aggressive",
+      "Explosive",
+      "Intense"
+    ],
+    "runningZone": "Push",
     "youtubeMusicQuery": "Fuel Metallica",
-    "youtubeQuery": "Fuel Metallica"
+    "youtubeQuery": "Fuel Metallica",
+    "youtubeMusicUrl": "https://music.youtube.com/search?q=Fuel+Metallica",
+    "spotifyUrl": "",
+    "durationSeconds": null,
+    "isExplicit": false,
+    "coverImage": "",
+    "album": null,
+    "thumbnailUrl": null,
+    "tags": [
+      "metal",
+      "push",
+      "high_turnover",
+      "runbeat"
+    ]
   },
   {
     "id": "cat-enter-sandman",
     "title": "Enter Sandman",
-    "artists": ["Metallica"],
+    "artist": "Metallica",
+    "artists": [
+      "Metallica"
+    ],
+    "genre": "metal",
+    "genres": [
+      "metal"
+    ],
+    "subGenre": "Heavy Metal",
     "bpm": 123,
-    "genres": ["metal"],
-    "album": null,
+    "effectiveBpm": 123,
+    "cadenceTarget": 123,
+    "cadenceMin": 119,
+    "cadenceMax": 127,
+    "energy": 6,
+    "mood": [
+      "Focused",
+      "Intense"
+    ],
+    "runningZone": "Warmup",
     "youtubeMusicQuery": "Enter Sandman Metallica",
-    "youtubeQuery": "Enter Sandman Metallica"
+    "youtubeQuery": "Enter Sandman Metallica",
+    "youtubeMusicUrl": "https://music.youtube.com/search?q=Enter+Sandman+Metallica",
+    "spotifyUrl": "",
+    "durationSeconds": null,
+    "isExplicit": false,
+    "coverImage": "",
+    "album": null,
+    "thumbnailUrl": null,
+    "tags": [
+      "metal",
+      "warmup",
+      "controlled",
+      "runbeat"
+    ]
   },
   {
     "id": "cat-duality",
     "title": "Duality",
-    "artists": ["Slipknot"],
+    "artist": "Slipknot",
+    "artists": [
+      "Slipknot"
+    ],
+    "genre": "metal",
+    "genres": [
+      "metal"
+    ],
+    "subGenre": "Heavy Metal",
     "bpm": 174,
-    "genres": ["metal"],
-    "album": null,
+    "effectiveBpm": 174,
+    "cadenceTarget": 174,
+    "cadenceMin": 170,
+    "cadenceMax": 178,
+    "energy": 9,
+    "mood": [
+      "Motivational",
+      "Aggressive",
+      "Intense"
+    ],
+    "runningZone": "Tempo Run",
     "youtubeMusicQuery": "Duality Slipknot",
-    "youtubeQuery": "Duality Slipknot"
+    "youtubeQuery": "Duality Slipknot",
+    "youtubeMusicUrl": "https://music.youtube.com/search?q=Duality+Slipknot",
+    "spotifyUrl": "",
+    "durationSeconds": null,
+    "isExplicit": false,
+    "coverImage": "",
+    "album": null,
+    "thumbnailUrl": null,
+    "tags": [
+      "metal",
+      "tempo_run",
+      "tempo",
+      "runbeat"
+    ]
   },
   {
     "id": "cat-psychosocial",
     "title": "Psychosocial",
-    "artists": ["Slipknot"],
+    "artist": "Slipknot",
+    "artists": [
+      "Slipknot"
+    ],
+    "genre": "metal",
+    "genres": [
+      "metal"
+    ],
+    "subGenre": "Heavy Metal",
     "bpm": 135,
-    "genres": ["metal"],
-    "album": null,
+    "effectiveBpm": 135,
+    "cadenceTarget": 135,
+    "cadenceMin": 131,
+    "cadenceMax": 139,
+    "energy": 6,
+    "mood": [
+      "Focused",
+      "Intense"
+    ],
+    "runningZone": "Warmup",
     "youtubeMusicQuery": "Psychosocial Slipknot",
-    "youtubeQuery": "Psychosocial Slipknot"
+    "youtubeQuery": "Psychosocial Slipknot",
+    "youtubeMusicUrl": "https://music.youtube.com/search?q=Psychosocial+Slipknot",
+    "spotifyUrl": "",
+    "durationSeconds": null,
+    "isExplicit": false,
+    "coverImage": "",
+    "album": null,
+    "thumbnailUrl": null,
+    "tags": [
+      "metal",
+      "warmup",
+      "controlled",
+      "runbeat"
+    ]
   },
   {
     "id": "cat-titanium",
     "title": "Titanium",
-    "artists": ["David Guetta"],
+    "artist": "David Guetta",
+    "artists": [
+      "David Guetta"
+    ],
+    "genre": "electronic",
+    "genres": [
+      "electronic"
+    ],
+    "subGenre": "Festival EDM",
     "bpm": 126,
-    "genres": ["electronic"],
-    "album": null,
+    "effectiveBpm": 126,
+    "cadenceTarget": 126,
+    "cadenceMin": 122,
+    "cadenceMax": 130,
+    "energy": 6,
+    "mood": [
+      "Focused",
+      "Euphoric"
+    ],
+    "runningZone": "Warmup",
     "youtubeMusicQuery": "Titanium David Guetta",
-    "youtubeQuery": "Titanium David Guetta"
+    "youtubeQuery": "Titanium David Guetta",
+    "youtubeMusicUrl": "https://music.youtube.com/search?q=Titanium+David+Guetta",
+    "spotifyUrl": "",
+    "durationSeconds": null,
+    "isExplicit": false,
+    "coverImage": "",
+    "album": null,
+    "thumbnailUrl": null,
+    "tags": [
+      "electronic",
+      "warmup",
+      "controlled",
+      "runbeat"
+    ]
   },
   {
     "id": "cat-play-hard",
     "title": "Play Hard",
-    "artists": ["David Guetta"],
+    "artist": "David Guetta",
+    "artists": [
+      "David Guetta"
+    ],
+    "genre": "electronic",
+    "genres": [
+      "electronic"
+    ],
+    "subGenre": "Festival EDM",
     "bpm": 130,
-    "genres": ["electronic"],
-    "album": null,
+    "effectiveBpm": 130,
+    "cadenceTarget": 130,
+    "cadenceMin": 126,
+    "cadenceMax": 134,
+    "energy": 6,
+    "mood": [
+      "Focused",
+      "Euphoric"
+    ],
+    "runningZone": "Warmup",
     "youtubeMusicQuery": "Play Hard David Guetta",
-    "youtubeQuery": "Play Hard David Guetta"
+    "youtubeQuery": "Play Hard David Guetta",
+    "youtubeMusicUrl": "https://music.youtube.com/search?q=Play+Hard+David+Guetta",
+    "spotifyUrl": "",
+    "durationSeconds": null,
+    "isExplicit": false,
+    "coverImage": "",
+    "album": null,
+    "thumbnailUrl": null,
+    "tags": [
+      "electronic",
+      "warmup",
+      "controlled",
+      "runbeat"
+    ]
   },
   {
     "id": "cat-levels",
     "title": "Levels",
-    "artists": ["Avicii"],
+    "artist": "Avicii",
+    "artists": [
+      "Avicii"
+    ],
+    "genre": "electronic",
+    "genres": [
+      "electronic"
+    ],
+    "subGenre": "Festival EDM",
     "bpm": 126,
-    "genres": ["electronic"],
-    "album": null,
+    "effectiveBpm": 126,
+    "cadenceTarget": 126,
+    "cadenceMin": 122,
+    "cadenceMax": 130,
+    "energy": 6,
+    "mood": [
+      "Focused",
+      "Euphoric"
+    ],
+    "runningZone": "Warmup",
     "youtubeMusicQuery": "Levels Avicii",
-    "youtubeQuery": "Levels Avicii"
+    "youtubeQuery": "Levels Avicii",
+    "youtubeMusicUrl": "https://music.youtube.com/search?q=Levels+Avicii",
+    "spotifyUrl": "",
+    "durationSeconds": null,
+    "isExplicit": false,
+    "coverImage": "",
+    "album": null,
+    "thumbnailUrl": null,
+    "tags": [
+      "electronic",
+      "warmup",
+      "controlled",
+      "runbeat"
+    ]
   },
   {
     "id": "cat-wake-me-up",
     "title": "Wake Me Up",
-    "artists": ["Avicii"],
+    "artist": "Avicii",
+    "artists": [
+      "Avicii"
+    ],
+    "genre": "electronic",
+    "genres": [
+      "electronic"
+    ],
+    "subGenre": "Festival EDM",
     "bpm": 124,
-    "genres": ["electronic"],
-    "album": null,
+    "effectiveBpm": 124,
+    "cadenceTarget": 124,
+    "cadenceMin": 120,
+    "cadenceMax": 128,
+    "energy": 6,
+    "mood": [
+      "Focused",
+      "Euphoric"
+    ],
+    "runningZone": "Warmup",
     "youtubeMusicQuery": "Wake Me Up Avicii",
-    "youtubeQuery": "Wake Me Up Avicii"
+    "youtubeQuery": "Wake Me Up Avicii",
+    "youtubeMusicUrl": "https://music.youtube.com/search?q=Wake+Me+Up+Avicii",
+    "spotifyUrl": "",
+    "durationSeconds": null,
+    "isExplicit": false,
+    "coverImage": "",
+    "album": null,
+    "thumbnailUrl": null,
+    "tags": [
+      "electronic",
+      "warmup",
+      "controlled",
+      "runbeat"
+    ]
   },
   {
     "id": "cat-animals",
     "title": "Animals",
-    "artists": ["Martin Garrix"],
+    "artist": "Martin Garrix",
+    "artists": [
+      "Martin Garrix"
+    ],
+    "genre": "electronic",
+    "genres": [
+      "electronic"
+    ],
+    "subGenre": "Festival EDM",
     "bpm": 128,
-    "genres": ["electronic"],
-    "album": null,
+    "effectiveBpm": 128,
+    "cadenceTarget": 128,
+    "cadenceMin": 124,
+    "cadenceMax": 132,
+    "energy": 6,
+    "mood": [
+      "Focused",
+      "Euphoric"
+    ],
+    "runningZone": "Warmup",
     "youtubeMusicQuery": "Animals Martin Garrix",
-    "youtubeQuery": "Animals Martin Garrix"
+    "youtubeQuery": "Animals Martin Garrix",
+    "youtubeMusicUrl": "https://music.youtube.com/search?q=Animals+Martin+Garrix",
+    "spotifyUrl": "",
+    "durationSeconds": null,
+    "isExplicit": false,
+    "coverImage": "",
+    "album": null,
+    "thumbnailUrl": null,
+    "tags": [
+      "electronic",
+      "warmup",
+      "controlled",
+      "runbeat"
+    ]
   },
   {
     "id": "cat-tremor",
     "title": "Tremor",
-    "artists": ["Martin Garrix & Dimitri Vegas"],
+    "artist": "Martin Garrix & Dimitri Vegas",
+    "artists": [
+      "Martin Garrix & Dimitri Vegas"
+    ],
+    "genre": "electronic",
+    "genres": [
+      "electronic"
+    ],
+    "subGenre": "Festival EDM",
     "bpm": 128,
-    "genres": ["electronic"],
-    "album": null,
+    "effectiveBpm": 128,
+    "cadenceTarget": 128,
+    "cadenceMin": 124,
+    "cadenceMax": 132,
+    "energy": 6,
+    "mood": [
+      "Focused",
+      "Euphoric"
+    ],
+    "runningZone": "Warmup",
     "youtubeMusicQuery": "Tremor Martin Garrix & Dimitri Vegas",
-    "youtubeQuery": "Tremor Martin Garrix & Dimitri Vegas"
+    "youtubeQuery": "Tremor Martin Garrix & Dimitri Vegas",
+    "youtubeMusicUrl": "https://music.youtube.com/search?q=Tremor+Martin+Garrix+&+Dimitri+Vegas",
+    "spotifyUrl": "",
+    "durationSeconds": null,
+    "isExplicit": false,
+    "coverImage": "",
+    "album": null,
+    "thumbnailUrl": null,
+    "tags": [
+      "electronic",
+      "warmup",
+      "controlled",
+      "runbeat"
+    ]
   },
   {
     "id": "cat-spaceman",
     "title": "Spaceman",
-    "artists": ["Hardwell"],
+    "artist": "Hardwell",
+    "artists": [
+      "Hardwell"
+    ],
+    "genre": "electronic",
+    "genres": [
+      "electronic"
+    ],
+    "subGenre": "Festival EDM",
     "bpm": 128,
-    "genres": ["electronic"],
-    "album": null,
+    "effectiveBpm": 128,
+    "cadenceTarget": 128,
+    "cadenceMin": 124,
+    "cadenceMax": 132,
+    "energy": 6,
+    "mood": [
+      "Focused",
+      "Euphoric"
+    ],
+    "runningZone": "Warmup",
     "youtubeMusicQuery": "Spaceman Hardwell",
-    "youtubeQuery": "Spaceman Hardwell"
+    "youtubeQuery": "Spaceman Hardwell",
+    "youtubeMusicUrl": "https://music.youtube.com/search?q=Spaceman+Hardwell",
+    "spotifyUrl": "",
+    "durationSeconds": null,
+    "isExplicit": false,
+    "coverImage": "",
+    "album": null,
+    "thumbnailUrl": null,
+    "tags": [
+      "electronic",
+      "warmup",
+      "controlled",
+      "runbeat"
+    ]
   },
   {
     "id": "cat-adagio-for-strings",
     "title": "Adagio For Strings",
-    "artists": ["Tiesto"],
+    "artist": "Tiesto",
+    "artists": [
+      "Tiesto"
+    ],
+    "genre": "electronic",
+    "genres": [
+      "electronic"
+    ],
+    "subGenre": "Festival EDM",
     "bpm": 138,
-    "genres": ["electronic"],
-    "album": null,
+    "effectiveBpm": 138,
+    "cadenceTarget": 138,
+    "cadenceMin": 134,
+    "cadenceMax": 142,
+    "energy": 6,
+    "mood": [
+      "Focused",
+      "Euphoric"
+    ],
+    "runningZone": "Warmup",
     "youtubeMusicQuery": "Adagio For Strings Tiesto",
-    "youtubeQuery": "Adagio For Strings Tiesto"
+    "youtubeQuery": "Adagio For Strings Tiesto",
+    "youtubeMusicUrl": "https://music.youtube.com/search?q=Adagio+For+Strings+Tiesto",
+    "spotifyUrl": "",
+    "durationSeconds": null,
+    "isExplicit": false,
+    "coverImage": "",
+    "album": null,
+    "thumbnailUrl": null,
+    "tags": [
+      "electronic",
+      "warmup",
+      "controlled",
+      "runbeat"
+    ]
   },
   {
     "id": "cat-one-kiss",
     "title": "One Kiss",
-    "artists": ["Dua Lipa"],
+    "artist": "Dua Lipa",
+    "artists": [
+      "Dua Lipa"
+    ],
+    "genre": "pop",
+    "genres": [
+      "pop"
+    ],
+    "subGenre": "Dance Pop",
     "bpm": 124,
-    "genres": ["pop"],
-    "album": null,
+    "effectiveBpm": 124,
+    "cadenceTarget": 124,
+    "cadenceMin": 120,
+    "cadenceMax": 128,
+    "energy": 6,
+    "mood": [
+      "Focused",
+      "Uplifting"
+    ],
+    "runningZone": "Warmup",
     "youtubeMusicQuery": "One Kiss Dua Lipa",
-    "youtubeQuery": "One Kiss Dua Lipa"
+    "youtubeQuery": "One Kiss Dua Lipa",
+    "youtubeMusicUrl": "https://music.youtube.com/search?q=One+Kiss+Dua+Lipa",
+    "spotifyUrl": "",
+    "durationSeconds": null,
+    "isExplicit": false,
+    "coverImage": "",
+    "album": null,
+    "thumbnailUrl": null,
+    "tags": [
+      "pop",
+      "warmup",
+      "controlled",
+      "runbeat"
+    ]
   },
   {
     "id": "cat-levitating",
     "title": "Levitating",
-    "artists": ["Dua Lipa"],
+    "artist": "Dua Lipa",
+    "artists": [
+      "Dua Lipa"
+    ],
+    "genre": "pop",
+    "genres": [
+      "pop"
+    ],
+    "subGenre": "Dance Pop",
     "bpm": 206,
-    "genres": ["pop"],
-    "album": null,
+    "effectiveBpm": 206,
+    "cadenceTarget": 206,
+    "cadenceMin": 202,
+    "cadenceMax": 208,
+    "energy": 10,
+    "mood": [
+      "Aggressive",
+      "Explosive",
+      "Uplifting"
+    ],
+    "runningZone": "Push",
     "youtubeMusicQuery": "Levitating Dua Lipa",
-    "youtubeQuery": "Levitating Dua Lipa"
+    "youtubeQuery": "Levitating Dua Lipa",
+    "youtubeMusicUrl": "https://music.youtube.com/search?q=Levitating+Dua+Lipa",
+    "spotifyUrl": "",
+    "durationSeconds": null,
+    "isExplicit": false,
+    "coverImage": "",
+    "album": null,
+    "thumbnailUrl": null,
+    "tags": [
+      "pop",
+      "push",
+      "high_turnover",
+      "runbeat"
+    ]
   }
 ]
