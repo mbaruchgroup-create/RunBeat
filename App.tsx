@@ -7,6 +7,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Linking,
+  Modal,
   Pressable,
   SafeAreaView,
   ScrollView,
@@ -16,6 +17,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import { WebView } from 'react-native-webview';
 
 import { useRunBeatAudio } from './src/audio/useRunBeatAudio';
 import { TRACKS } from './src/data/tracks';
@@ -74,6 +76,8 @@ export default function App() {
   const [elapsed, setElapsed] = useState(0);
   const [distanceKm, setDistanceKm] = useState(0);
   const [selectedGenre, setSelectedGenre] = useState<string>('all');
+  const [embeddedPlayerUrl, setEmbeddedPlayerUrl] = useState<string | null>(null);
+  const [embeddedPlayerTitle, setEmbeddedPlayerTitle] = useState<string>('RunBeat Player');
 
   useEffect(() => {
     AsyncStorage.getItem(STORAGE_KEY)
@@ -367,6 +371,13 @@ export default function App() {
     await Linking.openURL(supported ? preferredUrl : song.youtubeUrl);
   }
 
+  function openEmbeddedPlayer(song: RemoteSong | null) {
+    if (!song) return;
+    const preferredUrl = song.youtubeUrl || song.musicUrl;
+    setEmbeddedPlayerTitle(song.title);
+    setEmbeddedPlayerUrl(preferredUrl);
+  }
+
   async function openYouTubeMusicSearch() {
     const url = makeYouTubeMusicSearchUrl(makeCadenceQueries(cadence)[0]);
     await Linking.openURL(url);
@@ -397,6 +408,7 @@ export default function App() {
             selectedSong={selectedSong}
             nextTrack={nextTrack}
             onOpenRemoteSong={() => void openRemoteSong(selectedSong)}
+            onOpenEmbeddedSong={() => openEmbeddedPlayer(selectedSong)}
             onOpenMusicSearch={() => void openYouTubeMusicSearch()}
             metronomeVolume={settings.metronomeVolume}
             musicVolume={settings.musicVolume}
@@ -421,6 +433,7 @@ export default function App() {
             onRefresh={() => void fetchSongsForCadence()}
             onSelectSong={setSelectedSongId}
             onOpenSong={(song) => void openRemoteSong(song)}
+            onPlayInside={(song) => openEmbeddedPlayer(song)}
             onOpenSearch={() => void openYouTubeMusicSearch()}
             onChangeTolerance={(value) => updateSettings('tolerance', value)}
             tracks={rankedTracks}
@@ -477,6 +490,7 @@ export default function App() {
             selectedSong={selectedSong}
             onStartRun={startRun}
             onOpenRemoteSong={() => void openRemoteSong(selectedSong)}
+            onOpenEmbeddedSong={() => openEmbeddedPlayer(selectedSong)}
           />
         );
     }
@@ -496,6 +510,21 @@ export default function App() {
           <TabButton label="Mixer" tab="mixer" current={tab} icon="options-outline" onPress={setTab} />
         </View>
       </View>
+      <Modal visible={!!embeddedPlayerUrl} animationType="slide" onRequestClose={() => setEmbeddedPlayerUrl(null)}>
+        <SafeAreaView style={styles.playerSafeArea}>
+          <LinearGradient colors={['#1B1E23', '#0B0F13']} style={StyleSheet.absoluteFill} />
+          <View style={styles.playerHeader}>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.cardLabel}>Player interno</Text>
+              <Text style={styles.playerTitle}>{embeddedPlayerTitle}</Text>
+            </View>
+            <Pressable onPress={() => setEmbeddedPlayerUrl(null)} style={styles.playerCloseButton}>
+              <Ionicons name="close" size={22} color="#F4F7FB" />
+            </Pressable>
+          </View>
+          {embeddedPlayerUrl ? <WebView source={{ uri: embeddedPlayerUrl }} style={styles.playerWebView} /> : null}
+        </SafeAreaView>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -546,6 +575,7 @@ function RhythmScreen(props: {
   selectedSong: RemoteSong | null;
   onStartRun: () => void;
   onOpenRemoteSong: () => void;
+  onOpenEmbeddedSong: () => void;
 }) {
   return (
     <View style={styles.screen}>
@@ -655,9 +685,14 @@ function RhythmScreen(props: {
         <Card>
           <Text style={styles.cardLabel}>Musica real sugerida</Text>
           <RemoteSongRow song={props.selectedSong} active />
-          <Pressable onPress={props.onOpenRemoteSong} style={styles.secondaryButton}>
-            <Text style={styles.secondaryButtonText}>Abrir no YouTube Music</Text>
-          </Pressable>
+          <View style={styles.rowBetween}>
+            <Pressable onPress={props.onOpenEmbeddedSong} style={styles.secondaryButtonCompact}>
+              <Text style={styles.secondaryButtonText}>Tocar aqui</Text>
+            </Pressable>
+            <Pressable onPress={props.onOpenRemoteSong} style={styles.secondaryButtonCompact}>
+              <Text style={styles.secondaryButtonText}>Abrir no YouTube Music</Text>
+            </Pressable>
+          </View>
         </Card>
       ) : props.selectedTrack ? (
         <Card>
@@ -694,6 +729,7 @@ function RunScreen(props: {
   selectedSong: RemoteSong | null;
   nextTrack: () => void;
   onOpenRemoteSong: () => void;
+  onOpenEmbeddedSong: () => void;
   onOpenMusicSearch: () => void;
   metronomeVolume: number;
   musicVolume: number;
@@ -765,12 +801,16 @@ function RunScreen(props: {
               <Ionicons name={props.musicEnabled ? 'pause' : 'play'} size={18} color="#F4F7FB" />
               <Text style={styles.compactButtonText}>{props.musicEnabled ? 'Som local off' : 'Som local on'}</Text>
             </Pressable>
+            <Pressable onPress={props.onOpenEmbeddedSong} style={styles.compactButton}>
+              <Ionicons name="play-circle-outline" size={18} color="#F4F7FB" />
+              <Text style={styles.compactButtonText}>Tocar aqui</Text>
+            </Pressable>
+          </View>
+          <View style={styles.rowBetween}>
             <Pressable onPress={props.onOpenRemoteSong} style={styles.compactButton}>
               <Ionicons name="open-outline" size={18} color="#F4F7FB" />
               <Text style={styles.compactButtonText}>Abrir musica</Text>
             </Pressable>
-          </View>
-          <View style={styles.rowBetween}>
             <Pressable onPress={props.nextTrack} style={styles.compactButton}>
               <Ionicons name="play-skip-forward" size={18} color="#F4F7FB" />
               <Text style={styles.compactButtonText}>Proxima sugestao</Text>
@@ -842,12 +882,14 @@ function TracksScreen(props: {
   onRefresh: () => void;
   onSelectSong: (value: string) => void;
   onOpenSong: (song: RemoteSong) => void;
+  onPlayInside: (song: RemoteSong) => void;
   onOpenSearch: () => void;
   onChangeTolerance: (value: number) => void;
   tracks: Array<{ track: Track; distance: number }>;
   selectedTrackId: string;
   onSelectTrack: (value: string) => void;
 }) {
+  const allSongs = [...props.remoteSongs, ...props.remoteBands.flatMap((band) => band.items)];
   const genreOptions = ['all', 'pop', 'rock', 'hip hop', 'electronic', 'metal'];
   return (
     <View style={styles.screen}>
@@ -903,13 +945,35 @@ function TracksScreen(props: {
           <Pressable
             key={song.id}
             onPress={() => props.onSelectSong(song.id)}
-            onLongPress={() => props.onOpenSong(song)}
+            onLongPress={() => props.onPlayInside(song)}
           >
             <RemoteSongRow song={song} active={song.id === props.selectedSongId} />
           </Pressable>
         ))}
         {!props.isFetchingSongs && props.remoteSongs.length === 0 ? (
           <Text style={styles.emptyText}>Sem resultados do catalogo agora. O app continua com sugestoes pre-configuradas como fallback.</Text>
+        ) : null}
+        {props.selectedSongId ? (
+          <View style={styles.rowBetween}>
+            <Pressable
+              onPress={() => {
+                const selected = allSongs.find((song) => song.id === props.selectedSongId);
+                if (selected) props.onPlayInside(selected);
+              }}
+              style={styles.secondaryButtonCompact}
+            >
+              <Text style={styles.secondaryButtonText}>Tocar aqui</Text>
+            </Pressable>
+            <Pressable
+              onPress={() => {
+                const selected = allSongs.find((song) => song.id === props.selectedSongId);
+                if (selected) props.onOpenSong(selected);
+              }}
+              style={styles.secondaryButtonCompact}
+            >
+              <Text style={styles.secondaryButtonText}>Abrir externo</Text>
+            </Pressable>
+          </View>
         ) : null}
       </Card>
 
@@ -930,7 +994,7 @@ function TracksScreen(props: {
                 <Pressable
                   key={`${band.id}-${song.id}`}
                   onPress={() => props.onSelectSong(song.id)}
-                  onLongPress={() => props.onOpenSong(song)}
+                  onLongPress={() => props.onPlayInside(song)}
                 >
                   <RemoteSongRow song={song} active={song.id === props.selectedSongId} />
                 </Pressable>
@@ -946,7 +1010,7 @@ function TracksScreen(props: {
         {props.presetSongs
           .filter((song) => Math.abs(song.bpmHint - props.cadence) <= props.tolerance || song.id === `preset-${props.selectedTrackId}`)
           .map((song) => (
-            <Pressable key={song.id} onPress={() => props.onSelectSong(song.id)} onLongPress={() => props.onOpenSong(song)}>
+            <Pressable key={song.id} onPress={() => props.onSelectSong(song.id)} onLongPress={() => props.onPlayInside(song)}>
               <RemoteSongRow song={song} active={song.id === props.selectedSongId} />
             </Pressable>
           ))}
@@ -1978,5 +2042,40 @@ const styles = StyleSheet.create({
   },
   tabLabelActive: {
     color: '#C3FF3B',
+  },
+  playerSafeArea: {
+    flex: 1,
+    backgroundColor: '#0B0F13',
+  },
+  playerHeader: {
+    paddingHorizontal: 18,
+    paddingTop: 10,
+    paddingBottom: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#222A32',
+    backgroundColor: 'rgba(11, 15, 19, 0.96)',
+  },
+  playerTitle: {
+    color: '#F4F7FB',
+    fontSize: 20,
+    fontWeight: '800',
+    letterSpacing: -0.4,
+  },
+  playerCloseButton: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: '#171D23',
+    borderWidth: 1,
+    borderColor: '#2A3139',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  playerWebView: {
+    flex: 1,
+    backgroundColor: '#0B0F13',
   },
 });
