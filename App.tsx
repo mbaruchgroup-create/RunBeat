@@ -69,6 +69,7 @@ export default function App() {
   const [musicEnabled, setMusicEnabled] = useState(true);
   const [elapsed, setElapsed] = useState(0);
   const [distanceKm, setDistanceKm] = useState(0);
+  const [selectedGenre, setSelectedGenre] = useState<string>('all');
 
   useEffect(() => {
     AsyncStorage.getItem(STORAGE_KEY)
@@ -174,8 +175,16 @@ export default function App() {
 
     try {
       const [searchResponse, playlistResponse] = await Promise.all([
-        fetch(`${backendUrl}/search?bpm=${encodeURIComponent(cadence)}&limit=12`),
-        fetch(`${backendUrl}/playlist?bpm=${encodeURIComponent(cadence)}&limit_per_band=4`),
+        fetch(
+          `${backendUrl}/search?bpm=${encodeURIComponent(cadence)}&limit=12&tolerance=${encodeURIComponent(
+            Math.max(settings.tolerance, 8)
+          )}${selectedGenre !== 'all' ? `&genre=${encodeURIComponent(selectedGenre)}` : ''}`
+        ),
+        fetch(
+          `${backendUrl}/playlist?bpm=${encodeURIComponent(cadence)}&limit_per_band=4&tolerance=${encodeURIComponent(
+            Math.max(settings.tolerance, 8)
+          )}${selectedGenre !== 'all' ? `&genre=${encodeURIComponent(selectedGenre)}` : ''}`
+        ),
       ]);
 
       if (!searchResponse.ok) {
@@ -212,7 +221,7 @@ export default function App() {
     }, 450);
 
     return () => clearTimeout(timer);
-  }, [backendUrl, cadence]);
+  }, [backendUrl, cadence, selectedGenre, settings.tolerance]);
 
   useRunBeatAudio({
     cadence,
@@ -309,6 +318,8 @@ export default function App() {
             cadence={cadence}
             tolerance={settings.tolerance}
             backendUrl={backendUrl}
+            selectedGenre={selectedGenre}
+            onChangeGenre={setSelectedGenre}
             isFetchingSongs={isFetchingSongs}
             songsError={songsError}
             remoteSongs={remoteSongs}
@@ -684,6 +695,8 @@ function TracksScreen(props: {
   cadence: number;
   tolerance: number;
   backendUrl: string;
+  selectedGenre: string;
+  onChangeGenre: (value: string) => void;
   isFetchingSongs: boolean;
   songsError: string | null;
   remoteSongs: RemoteSong[];
@@ -699,6 +712,7 @@ function TracksScreen(props: {
   selectedTrackId: string;
   onSelectTrack: (value: string) => void;
 }) {
+  const genreOptions = ['all', 'pop', 'rock', 'electronic', 'hip hop', 'indie', 'dance'];
   return (
     <View style={styles.screen}>
       <Text style={styles.title}>Musicas por BPM</Text>
@@ -717,6 +731,16 @@ function TracksScreen(props: {
               active={value === props.tolerance}
               label={`±${value}`}
               onPress={() => props.onChangeTolerance(value)}
+            />
+          ))}
+        </View>
+        <View style={styles.row}>
+          {genreOptions.map((genre) => (
+            <PillButton
+              key={genre}
+              active={props.selectedGenre === genre}
+              label={genre === 'all' ? 'todos' : genre}
+              onPress={() => props.onChangeGenre(genre)}
             />
           ))}
         </View>
@@ -978,6 +1002,7 @@ function TrackRow({ track, distance, active }: { track: Track; distance: number;
 }
 
 function RemoteSongRow({ song, active }: { song: RemoteSong; active: boolean }) {
+  const genreText = song.genres && song.genres.length > 0 ? song.genres.slice(0, 2).join(' · ') : getSongArtists(song);
   return (
     <View style={[styles.trackRow, active && styles.trackRowActive]}>
       <View style={[styles.trackCover, styles.remoteCover]}>
@@ -986,6 +1011,7 @@ function RemoteSongRow({ song, active }: { song: RemoteSong; active: boolean }) 
       <View style={{ flex: 1 }}>
         <Text style={styles.trackTitle}>{song.title}</Text>
         <Text style={styles.trackArtist}>{getSongArtists(song)}</Text>
+        <Text style={styles.trackMeta}>{genreText}</Text>
       </View>
       <View style={{ alignItems: 'flex-end' }}>
         <Text style={styles.trackBpm}>{song.durationText ?? `${song.bpmHint} BPM`}</Text>
@@ -1409,6 +1435,11 @@ const styles = StyleSheet.create({
   trackArtist: {
     color: '#8A95A1',
     fontSize: 12,
+  },
+  trackMeta: {
+    color: '#6F7A84',
+    fontSize: 11,
+    marginTop: 2,
   },
   trackBpm: {
     color: '#F4F7FB',

@@ -7,6 +7,7 @@ npm-debug.*
 backend/.venv/
 backend/.cache/
 __pycache__/
+backend/__pycache__/
 *.pyc
 *.jks
 *.p8

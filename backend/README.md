@@ -43,6 +43,7 @@ Depois do deploy, copie a URL pública HTTPS do Railway e use essa URL no campo 
 - `GET /search?bpm=168`
 - `GET /playlist?bpm=168`
 - `GET /search/text?q=tempo%20run&bpm=168`
+- `GET /catalog?bpm=168`
 
 Agora o backend tenta usar o `GetSongBPM` como fonte principal de BPM e gênero, e cai para `ytmusicapi` como fallback.
 
@@ -65,6 +66,21 @@ Os endpoints aceitam `genre`, por exemplo:
 /playlist?bpm=168&genre=pop
 /search/text?q=too+sweet&bpm=117&genre=pop
 ```
+
+## Catálogo próprio
+
+O backend agora consulta primeiro o catálogo estruturado em:
+
+- `backend/data/catalog.json`
+
+Use isso para pré-cadastrar músicas por:
+
+- BPM
+- gênero
+- artista
+- query do YouTube Music
+
+Depois disso, ele só complementa com GetSongBPM e ytmusicapi se faltar resultado.
 
 ## Cache local
 

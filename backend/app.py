@@ -25,6 +25,7 @@ app.add_middleware(
 ytmusic = YTMusic()
 CACHE_DIR = Path(__file__).resolve().parent / ".cache"
 CACHE_FILE = CACHE_DIR / "ytmusic_cache.json"
+CATEGORY_FILE = Path(__file__).resolve().parent / "data" / "catalog.json"
 CACHE_TTL = timedelta(hours=12)
 GETSONGBPM_API_KEY = os.getenv("GETSONGBPM_API_KEY", "").strip()
 GETSONGBPM_BASE_URL = "https://api.getsong.co"
@@ -76,6 +77,16 @@ def build_queries(bpm: int) -> list[str]:
         f"{bpm} bpm tempo run",
         f"{bpm} bpm cardio music",
     ]
+
+
+def load_catalog() -> list[dict[str, Any]]:
+    if not CATEGORY_FILE.exists():
+        return []
+    try:
+        value = json.loads(CATEGORY_FILE.read_text(encoding="utf-8"))
+        return value if isinstance(value, list) else []
+    except Exception:
+        return []
 
 
 def build_playlist_bands(bpm: int) -> list[dict[str, Any]]:
@@ -189,6 +200,35 @@ def normalize_getsong_song(item: dict[str, Any], fallback_bpm: int) -> dict[str,
     }
 
 
+def normalize_catalog_song(item: dict[str, Any]) -> dict[str, Any] | None:
+    title = item.get("title")
+    song_id = item.get("id")
+    artists = item.get("artists") or []
+    genres = item.get("genres") or []
+    bpm = item.get("bpm")
+
+    if not title or not song_id or not artists or bpm is None:
+        return None
+
+    query = item.get("youtubeMusicQuery") or build_music_query(title, artists, int(bpm))
+    youtube_query = item.get("youtubeQuery") or query
+
+    return {
+        "id": str(song_id),
+        "videoId": str(song_id),
+        "title": title,
+        "artists": artists,
+        "genres": genres,
+        "durationText": f"{int(bpm)} BPM",
+        "album": item.get("album"),
+        "thumbnailUrl": item.get("thumbnailUrl"),
+        "bpmHint": int(bpm),
+        "query": query,
+        "musicUrl": make_music_url(query),
+        "youtubeUrl": make_youtube_url(youtube_query),
+    }
+
+
 def normalize_ytmusic_song(item: dict[str, Any], bpm: int, query: str) -> dict[str, Any] | None:
     video_id = item.get("videoId")
     title = item.get("title")
@@ -233,6 +273,48 @@ def matches_genre(song: dict[str, Any], genre: str | None) -> bool:
     return any(genre.lower() in value for value in genres)
 
 
+def search_catalog_by_bpm(bpm: int, limit: int, genre: str | None = None, tolerance: int = 8) -> list[dict[str, Any]]:
+    matches: list[dict[str, Any]] = []
+    for item in load_catalog():
+        song = normalize_catalog_song(item)
+        if not song:
+            continue
+        if abs(song["bpmHint"] - bpm) > tolerance:
+            continue
+        if not matches_genre(song, genre):
+            continue
+        matches.append(song)
+
+    matches.sort(key=lambda song: abs(song["bpmHint"] - bpm))
+    return matches[:limit]
+
+
+def search_catalog_by_text(q: str, bpm: int, limit: int, genre: str | None = None) -> list[dict[str, Any]]:
+    normalized_query = q.lower().strip()
+    matches: list[dict[str, Any]] = []
+
+    for item in load_catalog():
+        song = normalize_catalog_song(item)
+        if not song:
+            continue
+        haystack = " ".join(
+            [
+                song["title"],
+                " ".join(song["artists"]),
+                " ".join(song.get("genres", [])),
+                song.get("album") or "",
+            ]
+        ).lower()
+        if normalized_query not in haystack:
+            continue
+        if not matches_genre(song, genre):
+            continue
+        matches.append(song)
+
+    matches.sort(key=lambda song: (abs(song["bpmHint"] - bpm), song["title"]))
+    return matches[:limit]
+
+
 def fetch_song_results_from_getsong(bpm: int, limit: int, genre: str | None) -> list[dict[str, Any]]:
     response = getsong_request("/tempo/", {"bpm": bpm, "limit": limit * 3})
     if not response:
@@ -268,29 +350,43 @@ def fetch_song_results_from_ytmusic(bpm: int, limit: int) -> list[dict[str, Any]
     return list(deduped.values())
 
 
-def fetch_song_results(bpm: int, limit: int, genre: str | None = None) -> list[dict[str, Any]]:
-    cache_key = f"search:{bpm}:{limit}:{genre or 'all'}"
+def fetch_song_results(bpm: int, limit: int, genre: str | None = None, tolerance: int = 8) -> list[dict[str, Any]]:
+    cache_key = f"search:{bpm}:{limit}:{genre or 'all'}:{tolerance}"
     cached = get_cached(cache_key)
     if cached is not None:
         return cached
 
-    value = fetch_song_results_from_getsong(bpm, limit, genre)
-    if not value:
-        value = fetch_song_results_from_ytmusic(bpm, limit)
+    deduped: OrderedDict[str, dict[str, Any]] = OrderedDict()
+    for source_list in (
+        search_catalog_by_bpm(bpm, limit, genre, tolerance),
+        fetch_song_results_from_getsong(bpm, limit, genre),
+        fetch_song_results_from_ytmusic(bpm, limit),
+    ):
+        for song in source_list:
+            if song["id"] not in deduped:
+                deduped[song["id"]] = song
+            if len(deduped) >= limit:
+                break
+        if len(deduped) >= limit:
+            break
+
+    value = list(deduped.values())[:limit]
 
     set_cached(cache_key, value)
     return value
 
 
-def fetch_playlist_bands(bpm: int, limit_per_band: int, genre: str | None = None) -> list[dict[str, Any]]:
-    cache_key = f"playlist:{bpm}:{limit_per_band}:{genre or 'all'}"
+def fetch_playlist_bands(
+    bpm: int, limit_per_band: int, genre: str | None = None, tolerance: int = 8
+) -> list[dict[str, Any]]:
+    cache_key = f"playlist:{bpm}:{limit_per_band}:{genre or 'all'}:{tolerance}"
     cached = get_cached(cache_key)
     if cached is not None:
         return cached
 
     bands: list[dict[str, Any]] = []
     for band in build_playlist_bands(bpm):
-        items = fetch_song_results(band["bpm"], limit_per_band, genre)
+        items = fetch_song_results(band["bpm"], limit_per_band, genre, tolerance)
         bands.append({**band, "items": items})
 
     set_cached(cache_key, bands)
@@ -303,10 +399,14 @@ def search_songs_by_text(q: str, bpm: int, limit: int, genre: str | None = None)
     if cached is not None:
         return cached
 
-    value: list[dict[str, Any]] = []
+    value = search_catalog_by_text(q, bpm, limit, genre)
 
-    response = getsong_request("/search/", {"type": "both", "lookup": q, "limit": limit * 3})
-    if response:
+    if not value:
+        response = getsong_request("/search/", {"type": "both", "lookup": q, "limit": limit * 3})
+    else:
+        response = None
+
+    if response and not value:
         raw_items = response.get("search") or []
         deduped: OrderedDict[str, dict[str, Any]] = OrderedDict()
         for raw_item in raw_items:
@@ -340,6 +440,7 @@ def health():
             "getsongbpm": bool(GETSONGBPM_API_KEY),
             "ytmusicapi": True,
         },
+        "catalogSize": len(load_catalog()),
     }
 
 
@@ -348,8 +449,9 @@ def search_by_bpm(
     bpm: int = Query(..., ge=MIN_BPM, le=MAX_BPM),
     limit: int = Query(12, ge=1, le=25),
     genre: str | None = Query(None),
+    tolerance: int = Query(8, ge=0, le=20),
 ):
-    return {"items": fetch_song_results(bpm, limit, genre)}
+    return {"items": fetch_song_results(bpm, limit, genre, tolerance)}
 
 
 @app.get("/playlist")
@@ -357,8 +459,19 @@ def playlist_by_bpm(
     bpm: int = Query(..., ge=MIN_BPM, le=MAX_BPM),
     limit_per_band: int = Query(5, ge=1, le=10),
     genre: str | None = Query(None),
+    tolerance: int = Query(8, ge=0, le=20),
 ):
-    return {"bands": fetch_playlist_bands(bpm, limit_per_band, genre)}
+    return {"bands": fetch_playlist_bands(bpm, limit_per_band, genre, tolerance)}
+
+
+@app.get("/catalog")
+def catalog(
+    bpm: int = Query(..., ge=MIN_BPM, le=MAX_BPM),
+    limit: int = Query(20, ge=1, le=50),
+    genre: str | None = Query(None),
+    tolerance: int = Query(8, ge=0, le=20),
+):
+    return {"items": search_catalog_by_bpm(bpm, limit, genre, tolerance)}
 
 
 @app.get("/search/text")

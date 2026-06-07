@@ -1,0 +1,202 @@
+[
+  {
+    "id": "cat-too-sweet",
+    "title": "Too Sweet",
+    "artists": ["Hozier"],
+    "bpm": 117,
+    "genres": ["alternative", "indie", "rock"],
+    "album": "Unreal Unearth: Unending",
+    "youtubeMusicQuery": "Too Sweet Hozier",
+    "youtubeQuery": "Too Sweet Hozier"
+  },
+  {
+    "id": "cat-espresso",
+    "title": "Espresso",
+    "artists": ["Sabrina Carpenter"],
+    "bpm": 104,
+    "genres": ["pop"],
+    "album": "Short n' Sweet",
+    "youtubeMusicQuery": "Espresso Sabrina Carpenter",
+    "youtubeQuery": "Espresso Sabrina Carpenter"
+  },
+  {
+    "id": "cat-blinding-lights",
+    "title": "Blinding Lights",
+    "artists": ["The Weeknd"],
+    "bpm": 171,
+    "genres": ["pop", "synthpop"],
+    "album": "After Hours",
+    "youtubeMusicQuery": "Blinding Lights The Weeknd",
+    "youtubeQuery": "Blinding Lights The Weeknd"
+  },
+  {
+    "id": "cat-levitating",
+    "title": "Levitating",
+    "artists": ["Dua Lipa"],
+    "bpm": 103,
+    "genres": ["pop", "dance"],
+    "album": "Future Nostalgia",
+    "youtubeMusicQuery": "Levitating Dua Lipa",
+    "youtubeQuery": "Levitating Dua Lipa"
+  },
+  {
+    "id": "cat-titanium",
+    "title": "Titanium",
+    "artists": ["David Guetta", "Sia"],
+    "bpm": 126,
+    "genres": ["electronic", "dance"],
+    "album": "Nothing but the Beat",
+    "youtubeMusicQuery": "Titanium David Guetta Sia",
+    "youtubeQuery": "Titanium David Guetta Sia"
+  },
+  {
+    "id": "cat-head-heart",
+    "title": "Head & Heart",
+    "artists": ["Joel Corry", "MNEK"],
+    "bpm": 123,
+    "genres": ["electronic", "dance"],
+    "album": "Head & Heart",
+    "youtubeMusicQuery": "Head and Heart Joel Corry MNEK",
+    "youtubeQuery": "Head and Heart Joel Corry MNEK"
+  },
+  {
+    "id": "cat-cant-hold-us",
+    "title": "Can't Hold Us",
+    "artists": ["Macklemore & Ryan Lewis", "Ray Dalton"],
+    "bpm": 146,
+    "genres": ["hip hop", "pop rap"],
+    "album": "The Heist",
+    "youtubeMusicQuery": "Can't Hold Us Macklemore Ryan Lewis Ray Dalton",
+    "youtubeQuery": "Can't Hold Us Macklemore Ryan Lewis Ray Dalton"
+  },
+  {
+    "id": "cat-stronger",
+    "title": "Stronger",
+    "artists": ["Kanye West"],
+    "bpm": 104,
+    "genres": ["hip hop", "rap"],
+    "album": "Graduation",
+    "youtubeMusicQuery": "Stronger Kanye West",
+    "youtubeQuery": "Stronger Kanye West"
+  },
+  {
+    "id": "cat-dont-start-now",
+    "title": "Don't Start Now",
+    "artists": ["Dua Lipa"],
+    "bpm": 124,
+    "genres": ["pop", "dance"],
+    "album": "Future Nostalgia",
+    "youtubeMusicQuery": "Don't Start Now Dua Lipa",
+    "youtubeQuery": "Don't Start Now Dua Lipa"
+  },
+  {
+    "id": "cat-cold-heart",
+    "title": "Cold Heart (PNAU Remix)",
+    "artists": ["Elton John", "Dua Lipa"],
+    "bpm": 116,
+    "genres": ["pop", "dance"],
+    "album": "The Lockdown Sessions",
+    "youtubeMusicQuery": "Cold Heart PNAU Remix Elton John Dua Lipa",
+    "youtubeQuery": "Cold Heart PNAU Remix Elton John Dua Lipa"
+  },
+  {
+    "id": "cat-flowers",
+    "title": "Flowers",
+    "artists": ["Miley Cyrus"],
+    "bpm": 118,
+    "genres": ["pop"],
+    "album": "Endless Summer Vacation",
+    "youtubeMusicQuery": "Flowers Miley Cyrus",
+    "youtubeQuery": "Flowers Miley Cyrus"
+  },
+  {
+    "id": "cat-anti-hero",
+    "title": "Anti-Hero",
+    "artists": ["Taylor Swift"],
+    "bpm": 97,
+    "genres": ["pop"],
+    "album": "Midnights",
+    "youtubeMusicQuery": "Anti Hero Taylor Swift",
+    "youtubeQuery": "Anti Hero Taylor Swift"
+  },
+  {
+    "id": "cat-dance-the-night",
+    "title": "Dance The Night",
+    "artists": ["Dua Lipa"],
+    "bpm": 110,
+    "genres": ["pop", "dance"],
+    "album": "Barbie The Album",
+    "youtubeMusicQuery": "Dance The Night Dua Lipa",
+    "youtubeQuery": "Dance The Night Dua Lipa"
+  },
+  {
+    "id": "cat-viva-la-vida",
+    "title": "Viva La Vida",
+    "artists": ["Coldplay"],
+    "bpm": 138,
+    "genres": ["rock", "alternative"],
+    "album": "Viva La Vida",
+    "youtubeMusicQuery": "Viva La Vida Coldplay",
+    "youtubeQuery": "Viva La Vida Coldplay"
+  },
+  {
+    "id": "cat-mr-brightside",
+    "title": "Mr. Brightside",
+    "artists": ["The Killers"],
+    "bpm": 148,
+    "genres": ["rock", "indie"],
+    "album": "Hot Fuss",
+    "youtubeMusicQuery": "Mr Brightside The Killers",
+    "youtubeQuery": "Mr Brightside The Killers"
+  },
+  {
+    "id": "cat-lose-yourself",
+    "title": "Lose Yourself",
+    "artists": ["Eminem"],
+    "bpm": 171,
+    "genres": ["hip hop", "rap"],
+    "album": "8 Mile",
+    "youtubeMusicQuery": "Lose Yourself Eminem",
+    "youtubeQuery": "Lose Yourself Eminem"
+  },
+  {
+    "id": "cat-hey-ya",
+    "title": "Hey Ya!",
+    "artists": ["Outkast"],
+    "bpm": 160,
+    "genres": ["hip hop", "funk", "pop"],
+    "album": "Speakerboxxx/The Love Below",
+    "youtubeMusicQuery": "Hey Ya Outkast",
+    "youtubeQuery": "Hey Ya Outkast"
+  },
+  {
+    "id": "cat-take-on-me",
+    "title": "Take On Me",
+    "artists": ["a-ha"],
+    "bpm": 169,
+    "genres": ["pop", "synthpop"],
+    "album": "Hunting High and Low",
+    "youtubeMusicQuery": "Take On Me a-ha",
+    "youtubeQuery": "Take On Me a-ha"
+  },
+  {
+    "id": "cat-dont-stop-me-now",
+    "title": "Don't Stop Me Now",
+    "artists": ["Queen"],
+    "bpm": 156,
+    "genres": ["rock"],
+    "album": "Jazz",
+    "youtubeMusicQuery": "Don't Stop Me Now Queen",
+    "youtubeQuery": "Don't Stop Me Now Queen"
+  },
+  {
+    "id": "cat-september",
+    "title": "September",
+    "artists": ["Earth, Wind & Fire"],
+    "bpm": 126,
+    "genres": ["funk", "disco", "soul"],
+    "album": "The Best of Earth, Wind & Fire",
+    "youtubeMusicQuery": "September Earth Wind and Fire",
+    "youtubeQuery": "September Earth Wind and Fire"
+  }
+]
