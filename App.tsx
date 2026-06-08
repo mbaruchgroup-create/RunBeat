@@ -533,8 +533,9 @@ export default function App() {
         </SafeAreaView>
       </Modal>
       <Modal visible={trainingSheetOpen} animationType="slide" transparent onRequestClose={() => setTrainingSheetOpen(false)}>
-        <Pressable style={styles.sheetBackdrop} onPress={() => setTrainingSheetOpen(false)}>
-          <Pressable style={styles.sheet} onPress={() => undefined}>
+        <View style={styles.sheetBackdrop}>
+          <Pressable style={StyleSheet.absoluteFill} onPress={() => setTrainingSheetOpen(false)} />
+          <View style={styles.sheet}>
             {selectedTraining ? (
               <TrainingDetailSheetV2
                 training={selectedTraining}
@@ -548,8 +549,8 @@ export default function App() {
                 }}
               />
             ) : null}
-          </Pressable>
-        </Pressable>
+          </View>
+        </View>
       </Modal>
     </SafeAreaView>
   );
@@ -1524,7 +1525,12 @@ function TrainingDetailSheetV2(props: {
   const playlist = getTrainingPlaylist(props.training, props.songPool).slice(0, 4);
 
   return (
-    <ScrollView contentContainerStyle={styles.sheetScrollContent} showsVerticalScrollIndicator={false}>
+    <ScrollView
+      style={styles.sheetScroll}
+      contentContainerStyle={styles.sheetScrollContent}
+      showsVerticalScrollIndicator={false}
+      nestedScrollEnabled
+    >
       <View style={styles.sheetContent}>
         <View style={styles.sheetHandle} />
         <View style={styles.rowBetween}>
@@ -3206,6 +3212,9 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingBottom: 28,
     gap: 16,
+  },
+  sheetScroll: {
+    maxHeight: '100%',
   },
   sheetScrollContent: {
     paddingBottom: 20,
