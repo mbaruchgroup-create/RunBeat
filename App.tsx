@@ -45,6 +45,7 @@ import {
   buildPresetSongs,
   getSongArtists,
   makeCadenceQueries,
+  makeYouTubeEmbedUrl,
   makeYouTubeMusicSearchUrl,
   normalizeBackendUrl,
 } from './src/utils/youtube';
@@ -385,7 +386,10 @@ export default function App() {
 
   function openEmbeddedPlayer(song: RemoteSong | null) {
     if (!song) return;
-    const preferredUrl = song.youtubeUrl || song.musicUrl;
+    const preferredUrl =
+      song.videoId && !song.videoId.startsWith('preset-')
+        ? makeYouTubeEmbedUrl(song.videoId)
+        : song.youtubeUrl || song.musicUrl;
     setEmbeddedPlayerTitle(song.title);
     setEmbeddedPlayerUrl(preferredUrl);
   }
@@ -539,7 +543,34 @@ export default function App() {
               <Ionicons name="close" size={22} color="#F4F7FB" />
             </Pressable>
           </View>
-          {embeddedPlayerUrl ? <WebView source={{ uri: embeddedPlayerUrl }} style={styles.playerWebView} /> : null}
+          {embeddedPlayerUrl ? (
+            <WebView
+              source={{ uri: embeddedPlayerUrl }}
+              style={styles.playerWebView}
+              allowsInlineMediaPlayback
+              mediaPlaybackRequiresUserAction={false}
+              javaScriptEnabled
+              domStorageEnabled
+              setSupportMultipleWindows={false}
+              onShouldStartLoadWithRequest={(request) => {
+                const url = request.url ?? '';
+                if (
+                  url.startsWith('https://www.youtube.com/') ||
+                  url.startsWith('https://m.youtube.com/') ||
+                  url.startsWith('https://music.youtube.com/')
+                ) {
+                  return true;
+                }
+
+                if (url.startsWith('about:blank')) {
+                  return true;
+                }
+
+                void Linking.openURL(url).catch(() => undefined);
+                return false;
+              }}
+            />
+          ) : null}
         </SafeAreaView>
       </Modal>
       <Modal visible={trainingSheetOpen} animationType="slide" transparent onRequestClose={() => setTrainingSheetOpen(false)}>

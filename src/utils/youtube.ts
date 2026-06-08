@@ -4,6 +4,12 @@ export function makeYouTubeMusicSearchUrl(query: string) {
   return `https://music.youtube.com/search?q=${encodeURIComponent(query)}`;
 }
 
+export function makeYouTubeEmbedUrl(videoId: string) {
+  return `https://www.youtube.com/embed/${encodeURIComponent(
+    videoId
+  )}?autoplay=1&playsinline=1&rel=0&modestbranding=1`;
+}
+
 export function makeCadenceQueries(bpm: number) {
   return [
     `${bpm} bpm running`,
