@@ -10,6 +10,14 @@ export function makeYouTubeEmbedUrl(videoId: string) {
   )}?autoplay=1&playsinline=1&rel=0&modestbranding=1`;
 }
 
+export function makeYouTubeWatchUrl(videoId: string) {
+  return `https://www.youtube.com/watch?v=${encodeURIComponent(videoId)}`;
+}
+
+export function makeYouTubeMusicWatchUrl(videoId: string) {
+  return `https://music.youtube.com/watch?v=${encodeURIComponent(videoId)}`;
+}
+
 export function makeCadenceQueries(bpm: number) {
   return [
     `${bpm} bpm running`,

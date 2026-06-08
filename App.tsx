@@ -46,6 +46,8 @@ import {
   getSongArtists,
   makeCadenceQueries,
   makeYouTubeEmbedUrl,
+  makeYouTubeMusicWatchUrl,
+  makeYouTubeWatchUrl,
   makeYouTubeMusicSearchUrl,
   normalizeBackendUrl,
 } from './src/utils/youtube';
@@ -379,13 +381,26 @@ export default function App() {
 
   async function openRemoteSong(song: RemoteSong | null) {
     if (!song) return;
+    if (song.videoId && !song.videoId.startsWith('preset-')) {
+      const directMusicUrl = makeYouTubeMusicWatchUrl(song.videoId);
+      const directYouTubeUrl = makeYouTubeWatchUrl(song.videoId);
+      const supportedMusic = await Linking.canOpenURL(directMusicUrl);
+      await Linking.openURL(supportedMusic ? directMusicUrl : directYouTubeUrl);
+      return;
+    }
+
     const preferredUrl = song.musicUrl;
     const supported = await Linking.canOpenURL(preferredUrl);
     await Linking.openURL(supported ? preferredUrl : song.youtubeUrl);
   }
 
-  function openEmbeddedPlayer(song: RemoteSong | null) {
+  async function openEmbeddedPlayer(song: RemoteSong | null) {
     if (!song) return;
+    if (song.videoId && !song.videoId.startsWith('preset-')) {
+      await openRemoteSong(song);
+      return;
+    }
+
     const preferredUrl =
       song.videoId && !song.videoId.startsWith('preset-')
         ? makeYouTubeEmbedUrl(song.videoId)
