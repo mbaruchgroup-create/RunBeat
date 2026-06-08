@@ -390,7 +390,7 @@ export default function App() {
     switch (tab) {
       case 'correr':
         return (
-          <RunScreen
+          <RunScreenV2
             cadence={cadence}
             distanceKm={distanceKm}
             elapsed={elapsed}
@@ -401,6 +401,7 @@ export default function App() {
             selectedTraining={selectedTraining}
             activeTrainingSegment={activeTrainingSegment}
             onStart={startRun}
+            onOpenTrainings={() => setTab('treinos')}
             onPause={() => setRunning(false)}
             onResume={() => setRunning(true)}
             onStop={stopRun}
@@ -445,7 +446,7 @@ export default function App() {
         );
       case 'treinos':
         return (
-          <TrainingsScreen
+          <TrainingsScreenV2
             trainings={trainings}
             selectedTrainingId={selectedTrainingId}
             isFetchingTrainings={isFetchingTrainings}
@@ -535,8 +536,11 @@ export default function App() {
         <Pressable style={styles.sheetBackdrop} onPress={() => setTrainingSheetOpen(false)}>
           <Pressable style={styles.sheet} onPress={() => undefined}>
             {selectedTraining ? (
-              <TrainingDetailSheet
+              <TrainingDetailSheetV2
                 training={selectedTraining}
+                songPool={allRemoteSongs.length > 0 ? allRemoteSongs : presetSongs}
+                onPlaySong={(song) => openEmbeddedPlayer(song)}
+                onOpenSong={(song) => void openRemoteSong(song)}
                 onClose={() => setTrainingSheetOpen(false)}
                 onStart={() => {
                   setTrainingSheetOpen(false);
@@ -743,6 +747,7 @@ function RunScreen(props: {
   selectedTraining: TrainingPlan | null;
   activeTrainingSegment: TrainingPlan['segments'][number] | null;
   onStart: () => void;
+  onOpenTrainings: () => void;
   onPause: () => void;
   onResume: () => void;
   onStop: () => void;
@@ -1294,6 +1299,566 @@ function TrainingDetailSheet(props: {
   );
 }
 
+function getTrainingRange(training: TrainingPlan) {
+  return {
+    min: Math.min(...training.segments.map((segment) => segment.targetCadence)),
+    max: Math.max(...training.segments.map((segment) => segment.targetCadence)),
+  };
+}
+
+function getTrainingAccent(level: TrainingPlan['level']) {
+  if (level === 'advanced') return '#FF7B57';
+  if (level === 'intermediate') return '#34D6E8';
+  return '#C3FF3B';
+}
+
+function getTrainingPlaylist(training: TrainingPlan, songPool: RemoteSong[]) {
+  const picked = new Map<string, RemoteSong>();
+  for (const segment of training.segments) {
+    const target = segment.targetCadence;
+    const match = [...songPool]
+      .sort(
+        (a, b) =>
+          Math.abs((a.cadenceTarget ?? a.effectiveBpm ?? a.bpmHint) - target) -
+          Math.abs((b.cadenceTarget ?? b.effectiveBpm ?? b.bpmHint) - target)
+      )
+      .find((song) => !picked.has(song.id));
+    if (match) {
+      picked.set(match.id, match);
+    }
+  }
+
+  return training.segments
+    .map((segment, index) => {
+      const song = [...picked.values()][Math.min(index, picked.size - 1)];
+      if (!song) return null;
+      return { segment, song };
+    })
+    .filter(Boolean) as Array<{ segment: TrainingPlan['segments'][number]; song: RemoteSong }>;
+}
+
+function TrainingTimeline({
+  training,
+  activeSegment,
+  elapsedSeconds,
+}: {
+  training: TrainingPlan;
+  activeSegment: TrainingPlan['segments'][number] | null;
+  elapsedSeconds: number;
+}) {
+  return (
+    <View style={styles.timelineRow}>
+      {training.segments.map((segment, index) => {
+        const duration = Math.max(1, segment.minuteEnd - segment.minuteStart);
+        const segStart = segment.minuteStart * 60;
+        const segEnd = segment.minuteEnd * 60;
+        const current = segment === activeSegment;
+        const done = elapsedSeconds >= segEnd;
+        const progress = current ? Math.max(0, Math.min(1, (elapsedSeconds - segStart) / Math.max(1, segEnd - segStart))) : done ? 1 : 0;
+
+        return (
+          <View
+            key={`${training.id}-timeline-${index}`}
+            style={[
+              styles.timelineBlock,
+              {
+                flex: duration,
+                borderColor: current ? getTrainingAccent(training.level) : '#2A3139',
+              },
+            ]}
+          >
+            <View style={[styles.timelineFill, { width: `${progress * 100}%`, opacity: current ? 1 : done ? 0.55 : 0.08 }]} />
+            <Text style={[styles.timelineLabel, current && { color: getTrainingAccent(training.level) }]}>{segment.targetCadence}</Text>
+          </View>
+        );
+      })}
+    </View>
+  );
+}
+
+function TrainingRampChart({ training, accent }: { training: TrainingPlan; accent: string }) {
+  const range = getTrainingRange(training);
+  const floor = 135;
+  const ceiling = 195;
+
+  return (
+    <View style={styles.rampChartShell}>
+      <View style={styles.rampChartBand} />
+      <View style={styles.rampChartRow}>
+        {training.segments.map((segment, index) => {
+          const flex = Math.max(1, segment.minuteEnd - segment.minuteStart);
+          const height = Math.max(12, ((segment.targetCadence - floor) / (ceiling - floor)) * 96);
+          return (
+            <View key={`${training.id}-chart-${index}`} style={[styles.rampChartColumn, { flex }]}>
+              <View style={[styles.rampChartStep, { height, backgroundColor: `${accent}55`, borderColor: accent }]} />
+            </View>
+          );
+        })}
+      </View>
+      <View style={styles.rowBetween}>
+        <Text style={styles.rampChartAxis}>0 min</Text>
+        <Text style={styles.rampChartAxis}>{range.min}-{range.max} BPM</Text>
+        <Text style={styles.rampChartAxis}>{training.durationMinutes} min</Text>
+      </View>
+    </View>
+  );
+}
+
+function TrainingsScreenV2(props: {
+  trainings: TrainingPlan[];
+  selectedTrainingId: string | null;
+  isFetchingTrainings: boolean;
+  trainingsError: string | null;
+  currentCadence: number;
+  currentSegment: TrainingPlan['segments'][number] | null;
+  onRefresh: () => void;
+  onSelectTraining: (value: string) => void;
+  onStartTraining: (value: string) => void;
+  onOpenDetails: (value: string) => void;
+}) {
+  const selectedTraining = props.trainings.find((training) => training.id === props.selectedTrainingId) ?? null;
+  const selectedRange = selectedTraining ? getTrainingRange(selectedTraining) : null;
+
+  return (
+    <View style={styles.screen}>
+      <Text style={styles.title}>Treinos</Text>
+      <Text style={styles.buildBadge}>{VISUAL_BUILD_LABEL}</Text>
+      <Text style={styles.subtitle}>Programas progressivos: a cadencia sobe em etapas e a musica acompanha o seu ritmo.</Text>
+
+      <Card>
+        <View style={styles.rowBetween}>
+          <View>
+            <Text style={styles.cardLabel}>Cadencia atual</Text>
+            <Text style={[styles.metricValue, { color: '#C3FF3B' }]}>{props.currentCadence} BPM</Text>
+          </View>
+          <Pressable onPress={props.onRefresh} style={styles.secondaryButtonCompact}>
+            <Text style={styles.secondaryButtonText}>Atualizar treinos</Text>
+          </Pressable>
+        </View>
+        <Text style={styles.metricHint}>
+          {props.currentSegment
+            ? `Segmento ativo: ${props.currentSegment.minuteStart}-${props.currentSegment.minuteEnd} min · alvo ${props.currentSegment.targetCadence} BPM`
+            : 'Selecione um treino para guiar a corrida por cadencia.'}
+        </Text>
+      </Card>
+
+      {props.isFetchingTrainings ? (
+        <Card>
+          <View style={styles.loadingRow}>
+            <ActivityIndicator color="#C3FF3B" />
+            <Text style={styles.metricHint}>Carregando treinos...</Text>
+          </View>
+        </Card>
+      ) : null}
+
+      {props.trainingsError ? (
+        <Card>
+          <Text style={styles.errorText}>{props.trainingsError}</Text>
+        </Card>
+      ) : null}
+
+      {props.trainings.map((training) => {
+        const range = getTrainingRange(training);
+        const accent = getTrainingAccent(training.level);
+        const active = props.selectedTrainingId === training.id;
+
+        return (
+          <Pressable
+            key={training.id}
+            onPress={() => {
+              props.onSelectTraining(training.id);
+              props.onOpenDetails(training.id);
+            }}
+            style={[styles.trainingHeroCard, active && styles.trainingHeroCardActive]}
+          >
+            <View style={styles.rowBetween}>
+              <View style={[styles.trainingLevelPill, { backgroundColor: `${accent}22` }]}>
+                <View style={[styles.trainingLevelDot, { backgroundColor: accent }]} />
+                <Text style={[styles.trainingLevelText, { color: accent }]}>{training.level}</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={18} color="#7D8790" />
+            </View>
+            <Text style={styles.trainingHeroTitle}>{training.name}</Text>
+            <Text style={styles.trainingHeroSubtitle}>
+              {training.tagline ?? 'Treino progressivo para subir a cadencia com consistencia.'}
+            </Text>
+            <TrainingRampChart training={training} accent={accent} />
+            <View style={styles.trainingMetaRow}>
+              <TrainingMeta label="Duracao" value={`${training.durationMinutes}`} unit="min" />
+              <TrainingMeta label="Cadencia" value={`${range.min}-${range.max}`} unit="spm" />
+              <TrainingMeta label="Etapas" value={`${training.segments.length}`} unit="" />
+            </View>
+          </Pressable>
+        );
+      })}
+
+      {selectedTraining && selectedRange ? (
+        <Card>
+          <Text style={styles.cardLabel}>{selectedTraining.name}</Text>
+          <Text style={styles.metricHint}>{selectedTraining.tagline ?? 'Treino progressivo pronto para iniciar.'}</Text>
+          <View style={styles.rowBetween}>
+            <Stat label="Duracao" value={`${selectedTraining.durationMinutes} min`} />
+            <Stat label="Cadencia" value={`${selectedRange.min}-${selectedRange.max}`} />
+            <Stat label="Etapas" value={`${selectedTraining.segments.length}`} />
+          </View>
+          <Pressable onPress={() => props.onStartTraining(selectedTraining.id)} style={styles.primaryButton}>
+            <Ionicons name="play" size={20} color="#0D1116" />
+            <Text style={styles.primaryButtonText}>Iniciar treino</Text>
+          </Pressable>
+        </Card>
+      ) : null}
+    </View>
+  );
+}
+
+function TrainingDetailSheetV2(props: {
+  training: TrainingPlan;
+  songPool: RemoteSong[];
+  onPlaySong: (song: RemoteSong) => void;
+  onOpenSong: (song: RemoteSong) => void;
+  onClose: () => void;
+  onStart: () => void;
+}) {
+  const range = getTrainingRange(props.training);
+  const accent = getTrainingAccent(props.training.level);
+  const playlist = getTrainingPlaylist(props.training, props.songPool).slice(0, 4);
+
+  return (
+    <ScrollView contentContainerStyle={styles.sheetScrollContent} showsVerticalScrollIndicator={false}>
+      <View style={styles.sheetContent}>
+        <View style={styles.sheetHandle} />
+        <View style={styles.rowBetween}>
+          <View style={[styles.trainingLevelPill, { backgroundColor: `${accent}22` }]}>
+            <View style={[styles.trainingLevelDot, { backgroundColor: accent }]} />
+            <Text style={[styles.trainingLevelText, { color: accent }]}>{props.training.level}</Text>
+          </View>
+          <Pressable onPress={props.onClose} style={styles.playerCloseButton}>
+            <Ionicons name="close" size={20} color="#F4F7FB" />
+          </Pressable>
+        </View>
+        <Text style={styles.sheetTitle}>{props.training.name}</Text>
+        <Text style={styles.subtitle}>
+          {props.training.tagline ?? 'Treino progressivo para subir a cadencia em etapas com controle.'}
+        </Text>
+
+        <View style={styles.trainingDetailPanel}>
+          <TrainingRampChart training={props.training} accent={accent} />
+        </View>
+
+        <View style={styles.trainingStatBoxes}>
+          <TrainingStatBox icon="flag-outline" label="Duracao" value={`${props.training.durationMinutes} min`} />
+          <TrainingStatBox icon="pulse-outline" label="Cadencia" value={`${range.min}-${range.max}`} />
+          <TrainingStatBox icon="layers-outline" label="Etapas" value={`${props.training.segments.length}`} />
+        </View>
+
+        {props.training.goals && props.training.goals.length > 0 ? (
+          <View style={styles.trainingSection}>
+            <Text style={styles.trainingSectionLabel}>Objetivos</Text>
+            <View style={styles.trainingGoals}>
+              {props.training.goals.map((goal) => (
+                <View key={goal} style={styles.trainingGoalRow}>
+                  <View style={[styles.trainingGoalIcon, { backgroundColor: `${accent}22` }]}>
+                    <Ionicons name="checkmark" size={12} color={accent} />
+                  </View>
+                  <Text style={styles.trainingGoalText}>{goal}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
+        ) : null}
+
+        {playlist.length > 0 ? (
+          <View style={styles.trainingSection}>
+            <View style={styles.rowBetween}>
+              <View>
+                <Text style={styles.trainingSectionLabel}>Playlist no ritmo</Text>
+                <Text style={styles.metricHint}>mesma cadencia, faixas diferentes</Text>
+              </View>
+            </View>
+            <View style={styles.trainingPlaylistStack}>
+              {playlist.map(({ segment, song }) => (
+                <Pressable
+                  key={`${props.training.id}-${song.id}-${segment.minuteStart}`}
+                  onPress={() => props.onPlaySong(song)}
+                  onLongPress={() => props.onOpenSong(song)}
+                  style={styles.trainingPlaylistCard}
+                >
+                  <RemoteSongRow song={song} active={false} />
+                  <Text style={styles.trainingPlaylistTime}>
+                    {segment.minuteStart}-{segment.minuteEnd} min
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
+          </View>
+        ) : null}
+
+        <View style={styles.trainingSection}>
+          <Text style={styles.trainingSectionLabel}>Progressao por etapa</Text>
+          <View style={styles.trainingSegmentsColumn}>
+            {props.training.segments.map((segment, index) => (
+              <View key={`${props.training.id}-detail-v2-${index}`} style={styles.trainingSegmentDetailCard}>
+                <Text style={styles.trainingSegmentTime}>
+                  {segment.minuteStart}-{segment.minuteEnd} min
+                </Text>
+                <View style={styles.trainingSegmentDetailTrack}>
+                  <View
+                    style={[
+                      styles.trainingSegmentDetailFill,
+                      {
+                        width: `${((segment.targetCadence - 135) / (195 - 135)) * 100}%`,
+                        backgroundColor: accent,
+                      },
+                    ]}
+                  />
+                </View>
+                <Text style={styles.trainingSegmentCadence}>{segment.targetCadence}</Text>
+              </View>
+            ))}
+          </View>
+        </View>
+
+        <Pressable onPress={props.onStart} style={styles.primaryButton}>
+          <Ionicons name="play" size={20} color="#0D1116" />
+          <Text style={styles.primaryButtonText}>Iniciar treino</Text>
+        </Pressable>
+      </View>
+    </ScrollView>
+  );
+}
+
+function RunScreenV2(props: {
+  cadence: number;
+  distanceKm: number;
+  elapsed: number;
+  pace: number;
+  running: boolean;
+  started: boolean;
+  currentFoot: string;
+  selectedTraining: TrainingPlan | null;
+  activeTrainingSegment: TrainingPlan['segments'][number] | null;
+  onStart: () => void;
+  onOpenTrainings: () => void;
+  onPause: () => void;
+  onResume: () => void;
+  onStop: () => void;
+  musicEnabled: boolean;
+  onToggleMusic: () => void;
+  selectedTrack: Track | null;
+  selectedSong: RemoteSong | null;
+  nextTrack: () => void;
+  onOpenRemoteSong: () => void;
+  onOpenEmbeddedSong: () => void;
+  onOpenMusicSearch: () => void;
+  metronomeVolume: number;
+  musicVolume: number;
+  onChangeMetronomeVolume: (value: number) => void;
+  onChangeMusicVolume: (value: number) => void;
+}) {
+  const segmentIndex =
+    props.selectedTraining && props.activeTrainingSegment
+      ? props.selectedTraining.segments.findIndex((segment) => segment === props.activeTrainingSegment)
+      : -1;
+  const nextSegment =
+    props.selectedTraining && segmentIndex >= 0 && segmentIndex < props.selectedTraining.segments.length - 1
+      ? props.selectedTraining.segments[segmentIndex + 1]
+      : null;
+
+  if (!props.started) {
+    return (
+      <View style={[styles.screen, styles.centeredScreen]}>
+        <View style={styles.startRing}>
+          <MaterialCommunityIcons name="heart-pulse" size={34} color="#C3FF3B" />
+        </View>
+        <Text style={styles.title}>Pronto para correr</Text>
+        <Text style={styles.subtitle}>Cadencia {props.cadence} BPM · pace {formatPace(props.pace)} /km</Text>
+        {props.selectedTraining ? (
+          <View style={styles.runTrainingPreview}>
+            <View style={styles.rowBetween}>
+              <View style={styles.levelBadge}>
+                <View style={styles.levelDot} />
+                <Text style={styles.levelBadgeText}>{props.selectedTraining.level}</Text>
+              </View>
+              <Text style={styles.metricHint}>{props.selectedTraining.durationMinutes} min</Text>
+            </View>
+            <Text style={styles.runTrainingPreviewTitle}>{props.selectedTraining.name}</Text>
+            <Text style={styles.runTrainingPreviewSubtitle}>
+              {props.selectedTraining.tagline ?? 'Treino progressivo com cadencia guiada em etapas.'}
+            </Text>
+            <TrainingTimeline
+              training={props.selectedTraining}
+              activeSegment={props.selectedTraining.segments[0] ?? null}
+              elapsedSeconds={0}
+            />
+          </View>
+        ) : null}
+        <View style={styles.startActions}>
+          <Pressable onPress={props.onStart} style={styles.primaryButton}>
+            <Ionicons name="play" size={20} color="#0D1116" />
+            <Text style={styles.primaryButtonText}>Corrida livre</Text>
+          </Pressable>
+          <Pressable onPress={props.onOpenTrainings} style={styles.runGhostButton}>
+            <Ionicons name="fitness-outline" size={18} color="#F4F7FB" />
+            <Text style={styles.runGhostButtonText}>Escolher um treino</Text>
+          </Pressable>
+        </View>
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.screen}>
+      <View style={styles.runHeader}>
+        <Stat label="Tempo" value={formatClock(props.elapsed)} emphasis />
+        <Stat label="Distancia" value={`${props.distanceKm.toFixed(2)} km`} emphasis />
+        <Stat label="Pace" value={`${formatPace(props.pace)} /km`} emphasis />
+      </View>
+
+      {props.selectedTraining && props.activeTrainingSegment ? (
+        <View style={styles.runTrainingCard}>
+          <View style={styles.rowBetween}>
+            <View style={styles.levelBadge}>
+              <View style={styles.levelDot} />
+              <Text style={styles.levelBadgeText}>{props.selectedTraining.level}</Text>
+            </View>
+            <Text style={styles.metricHint}>
+              etapa {segmentIndex + 1}/{props.selectedTraining.segments.length}
+            </Text>
+          </View>
+          <Text style={styles.runTrainingTitle}>{props.selectedTraining.name}</Text>
+          <View style={styles.rowBetween}>
+            <Stat
+              label="Segmento"
+              value={`${props.activeTrainingSegment.minuteStart}-${props.activeTrainingSegment.minuteEnd} min`}
+            />
+            <Stat label="Alvo" value={`${props.activeTrainingSegment.targetCadence} BPM`} />
+          </View>
+          <TrainingTimeline
+            training={props.selectedTraining}
+            activeSegment={props.activeTrainingSegment}
+            elapsedSeconds={props.elapsed}
+          />
+        </View>
+      ) : null}
+
+      <View style={styles.beatShell}>
+        <View style={[styles.beatCore, props.running && styles.beatCoreActive]}>
+          <Text style={styles.beatNumber}>{props.cadence}</Text>
+          <Text style={styles.beatLabel}>BPM</Text>
+          <View style={styles.footBadge}>
+            <View style={[styles.footDot, props.running && styles.footDotActive]} />
+            <Text style={styles.footText}>{props.running ? `Pisada ${props.currentFoot.toLowerCase()}` : 'Pausado'}</Text>
+          </View>
+        </View>
+      </View>
+
+      {props.selectedTraining && props.activeTrainingSegment ? (
+        <View style={styles.runNextHint}>
+          {nextSegment ? (
+            <>
+              <Text style={styles.runNextArrow}>
+                {nextSegment.targetCadence >= props.activeTrainingSegment.targetCadence ? '▲' : '▼'}
+              </Text>
+              <Text style={styles.runNextHintText}>
+                Proxima cadencia <Text style={styles.runNextCadence}>{nextSegment.targetCadence}</Text> em{' '}
+                {formatClock(Math.max(0, nextSegment.minuteStart * 60 - props.elapsed))}
+              </Text>
+            </>
+          ) : (
+            <Text style={styles.runNextHintText}>Etapa final — segure o ritmo.</Text>
+          )}
+        </View>
+      ) : null}
+
+      {props.selectedSong ? (
+        <View style={styles.nowPlayingCard}>
+          <Text style={styles.cardLabel}>Agora no YouTube Music</Text>
+          <RemoteSongRow song={props.selectedSong} active />
+          <View style={styles.nowPlayingActions}>
+            <Pressable onPress={props.onToggleMusic} style={styles.compactButton}>
+              <Ionicons name={props.musicEnabled ? 'pause' : 'play'} size={18} color="#F4F7FB" />
+              <Text style={styles.compactButtonText}>{props.musicEnabled ? 'Som local off' : 'Som local on'}</Text>
+            </Pressable>
+            <Pressable onPress={props.onOpenEmbeddedSong} style={styles.compactButton}>
+              <Ionicons name="play-circle-outline" size={18} color="#F4F7FB" />
+              <Text style={styles.compactButtonText}>Tocar aqui</Text>
+            </Pressable>
+          </View>
+          <View style={styles.nowPlayingActions}>
+            <Pressable onPress={props.onOpenRemoteSong} style={styles.compactButton}>
+              <Ionicons name="open-outline" size={18} color="#F4F7FB" />
+              <Text style={styles.compactButtonText}>Abrir musica</Text>
+            </Pressable>
+            <Pressable onPress={props.nextTrack} style={styles.compactButton}>
+              <Ionicons name="play-skip-forward" size={18} color="#F4F7FB" />
+              <Text style={styles.compactButtonText}>Proxima sugestao</Text>
+            </Pressable>
+            <Pressable onPress={props.onOpenMusicSearch} style={styles.compactButton}>
+              <Ionicons name="search" size={18} color="#F4F7FB" />
+              <Text style={styles.compactButtonText}>Busca aberta</Text>
+            </Pressable>
+          </View>
+        </View>
+      ) : props.selectedTrack ? (
+        <Card>
+          <TrackRow track={props.selectedTrack} distance={0} active />
+          <View style={styles.rowBetween}>
+            <Pressable onPress={props.onToggleMusic} style={styles.compactButton}>
+              <Ionicons name={props.musicEnabled ? 'pause' : 'play'} size={18} color="#F4F7FB" />
+              <Text style={styles.compactButtonText}>{props.musicEnabled ? 'Pausar demo' : 'Tocar demo'}</Text>
+            </Pressable>
+            <Pressable onPress={props.nextTrack} style={styles.compactButton}>
+              <Ionicons name="play-skip-forward" size={18} color="#F4F7FB" />
+              <Text style={styles.compactButtonText}>Proxima demo</Text>
+            </Pressable>
+          </View>
+        </Card>
+      ) : null}
+
+      <View style={styles.rowBetween}>
+        <Pressable onPress={props.running ? props.onPause : props.onResume} style={styles.secondaryControl}>
+          <Ionicons name={props.running ? 'pause' : 'play'} size={18} color="#F4F7FB" />
+          <Text style={styles.secondaryControlText}>{props.running ? 'Pausar' : 'Continuar'}</Text>
+        </Pressable>
+        <Pressable onPress={props.onStop} style={styles.stopControl}>
+          <Ionicons name="stop" size={18} color="#0D1116" />
+          <Text style={styles.stopControlText}>Encerrar</Text>
+        </Pressable>
+      </View>
+    </View>
+  );
+}
+
+function TrainingMeta({ label, value, unit }: { label: string; value: string; unit: string }) {
+  return (
+    <View style={styles.trainingMetaBlock}>
+      <Text style={styles.trainingMetaLabel}>{label}</Text>
+      <Text style={styles.trainingMetaValue}>
+        {value}
+        {unit ? <Text style={styles.trainingMetaUnit}> {unit}</Text> : null}
+      </Text>
+    </View>
+  );
+}
+
+function TrainingStatBox({
+  icon,
+  label,
+  value,
+}: {
+  icon: keyof typeof Ionicons.glyphMap;
+  label: string;
+  value: string;
+}) {
+  return (
+    <View style={styles.trainingStatBox}>
+      <Ionicons name={icon} size={18} color="#C3FF3B" />
+      <Text style={styles.trainingStatValue}>{value}</Text>
+      <Text style={styles.trainingStatLabel}>{label}</Text>
+    </View>
+  );
+}
+
 function SettingsScreen(props: {
   settings: AppSettings;
   suggestedStride: number;
@@ -1667,6 +2232,22 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: 300,
     marginTop: 8,
+    gap: 10,
+  },
+  runGhostButton: {
+    minHeight: 56,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: '#2B333A',
+    backgroundColor: '#171D23',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    gap: 8,
+  },
+  runGhostButtonText: {
+    color: '#F4F7FB',
+    fontWeight: '800',
   },
   eyebrow: {
     color: '#C3FF3B',
@@ -2275,6 +2856,107 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#222A31',
   },
+  trainingHeroCard: {
+    backgroundColor: '#11161B',
+    borderWidth: 1,
+    borderColor: '#242C34',
+    borderRadius: 24,
+    padding: 16,
+    gap: 12,
+  },
+  trainingHeroCardActive: {
+    shadowColor: '#C3FF3B',
+    shadowOpacity: 0.18,
+    shadowRadius: 18,
+    shadowOffset: { width: 0, height: 10 },
+    elevation: 8,
+  },
+  trainingHeroTitle: {
+    color: '#F4F7FB',
+    fontSize: 22,
+    fontWeight: '800',
+    letterSpacing: -0.5,
+  },
+  trainingHeroSubtitle: {
+    color: '#9BA6B2',
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  trainingLevelPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 999,
+  },
+  trainingLevelDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 999,
+  },
+  trainingLevelText: {
+    fontSize: 11,
+    fontWeight: '800',
+    letterSpacing: 0.4,
+    textTransform: 'uppercase',
+  },
+  rampChartShell: {
+    gap: 8,
+  },
+  rampChartBand: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 22,
+    bottom: 22,
+    borderRadius: 16,
+    backgroundColor: 'rgba(195, 255, 59, 0.08)',
+  },
+  rampChartRow: {
+    height: 96,
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    gap: 4,
+  },
+  rampChartColumn: {
+    justifyContent: 'flex-end',
+  },
+  rampChartStep: {
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+    borderWidth: 1,
+    minHeight: 12,
+  },
+  rampChartAxis: {
+    color: '#77818B',
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  trainingMetaRow: {
+    flexDirection: 'row',
+    gap: 18,
+  },
+  trainingMetaBlock: {
+    gap: 3,
+  },
+  trainingMetaLabel: {
+    color: '#7D8790',
+    fontSize: 10,
+    fontWeight: '800',
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+  },
+  trainingMetaValue: {
+    color: '#F4F7FB',
+    fontSize: 18,
+    fontWeight: '800',
+  },
+  trainingMetaUnit: {
+    color: '#8A95A1',
+    fontSize: 11,
+    fontWeight: '700',
+  },
   trainingCardActive: {
     backgroundColor: 'rgba(195, 255, 59, 0.06)',
     borderRadius: 14,
@@ -2325,6 +3007,51 @@ const styles = StyleSheet.create({
   },
   trainingSegmentsColumn: {
     gap: 10,
+  },
+  trainingSection: {
+    gap: 10,
+  },
+  trainingSectionLabel: {
+    color: '#8995A1',
+    fontSize: 12,
+    fontWeight: '800',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+  },
+  trainingGoalIcon: {
+    width: 20,
+    height: 20,
+    borderRadius: 999,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  trainingPlaylistStack: {
+    gap: 8,
+  },
+  trainingPlaylistCard: {
+    gap: 8,
+    padding: 10,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#242C34',
+    backgroundColor: '#141A20',
+  },
+  trainingPlaylistTime: {
+    alignSelf: 'flex-end',
+    color: '#8A95A1',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  trainingSegmentDetailCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: '#242C34',
+    backgroundColor: '#141A20',
   },
   trainingSegmentDetailRow: {
     flexDirection: 'row',
@@ -2480,6 +3207,9 @@ const styles = StyleSheet.create({
     paddingBottom: 28,
     gap: 16,
   },
+  sheetScrollContent: {
+    paddingBottom: 20,
+  },
   sheetHandle: {
     alignSelf: 'center',
     width: 42,
@@ -2493,6 +3223,37 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: '800',
     letterSpacing: -0.6,
+  },
+  trainingDetailPanel: {
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: '#252D35',
+    backgroundColor: '#141A20',
+    padding: 14,
+  },
+  trainingStatBoxes: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  trainingStatBox: {
+    flex: 1,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#252D35',
+    backgroundColor: '#141A20',
+    paddingHorizontal: 12,
+    paddingVertical: 14,
+    gap: 6,
+  },
+  trainingStatValue: {
+    color: '#F4F7FB',
+    fontSize: 16,
+    fontWeight: '800',
+  },
+  trainingStatLabel: {
+    color: '#8A95A1',
+    fontSize: 11,
+    fontWeight: '700',
   },
   levelBadge: {
     flexDirection: 'row',
@@ -2515,5 +3276,100 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     textTransform: 'uppercase',
     letterSpacing: 0.4,
+  },
+  timelineRow: {
+    flexDirection: 'row',
+    gap: 4,
+    height: 40,
+  },
+  timelineBlock: {
+    height: 40,
+    borderRadius: 8,
+    borderWidth: 1,
+    backgroundColor: '#171D23',
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
+  },
+  timelineFill: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(195,255,59,0.24)',
+  },
+  timelineLabel: {
+    color: '#8A95A1',
+    fontSize: 12,
+    fontWeight: '800',
+  },
+  runTrainingPreview: {
+    width: '100%',
+    maxWidth: 320,
+    borderRadius: 22,
+    borderWidth: 1,
+    borderColor: '#252D35',
+    backgroundColor: '#12171C',
+    padding: 16,
+    gap: 10,
+  },
+  runTrainingPreviewTitle: {
+    color: '#F4F7FB',
+    fontSize: 20,
+    fontWeight: '800',
+    letterSpacing: -0.4,
+  },
+  runTrainingPreviewSubtitle: {
+    color: '#8A95A1',
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  runTrainingCard: {
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#252D35',
+    backgroundColor: '#12171C',
+    padding: 14,
+    gap: 12,
+  },
+  runTrainingTitle: {
+    color: '#F4F7FB',
+    fontSize: 18,
+    fontWeight: '800',
+    letterSpacing: -0.3,
+  },
+  runNextHint: {
+    marginTop: -6,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 7,
+  },
+  runNextArrow: {
+    color: '#C3FF3B',
+    fontSize: 13,
+    fontWeight: '900',
+  },
+  runNextHintText: {
+    color: '#8A95A1',
+    fontSize: 12.5,
+    fontWeight: '700',
+  },
+  runNextCadence: {
+    color: '#F4F7FB',
+    fontWeight: '900',
+  },
+  nowPlayingCard: {
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: '#252D35',
+    backgroundColor: '#12171C',
+    padding: 14,
+    gap: 10,
+  },
+  nowPlayingActions: {
+    flexDirection: 'row',
+    gap: 8,
+    flexWrap: 'wrap',
   },
 });
