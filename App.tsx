@@ -71,6 +71,7 @@ export default function App() {
   const [isFetchingTrainings, setIsFetchingTrainings] = useState(false);
   const [trainingsError, setTrainingsError] = useState<string | null>(null);
   const [selectedTrainingId, setSelectedTrainingId] = useState<string | null>(null);
+  const [activeTrainingId, setActiveTrainingId] = useState<string | null>(null);
   const [running, setRunning] = useState(false);
   const [started, setStarted] = useState(false);
   const [musicEnabled, setMusicEnabled] = useState(true);
@@ -113,17 +114,21 @@ export default function App() {
     () => trainings.find((training) => training.id === selectedTrainingId) ?? null,
     [selectedTrainingId, trainings]
   );
+  const activeTraining = useMemo(
+    () => trainings.find((training) => training.id === activeTrainingId) ?? null,
+    [activeTrainingId, trainings]
+  );
   const activeTrainingSegment = useMemo(() => {
-    if (!selectedTraining) return null;
+    if (!activeTraining) return null;
     const elapsedMinutes = elapsed / 60;
     return (
-      selectedTraining.segments.find(
+      activeTraining.segments.find(
         (segment) => elapsedMinutes >= segment.minuteStart && elapsedMinutes < segment.minuteEnd
-      ) ?? selectedTraining.segments[selectedTraining.segments.length - 1] ?? null
+      ) ?? activeTraining.segments[activeTraining.segments.length - 1] ?? null
     );
-  }, [elapsed, selectedTraining]);
-  const trainingCadence = selectedTraining
-    ? activeTrainingSegment?.targetCadence ?? selectedTraining.segments[0]?.targetCadence ?? null
+  }, [activeTraining, elapsed]);
+  const trainingCadence = activeTraining
+    ? activeTrainingSegment?.targetCadence ?? activeTraining.segments[0]?.targetCadence ?? null
     : null;
   const cadence = cadenceOverride ?? trainingCadence ?? autoCadence;
   const liveStride = useMemo(() => strideFor(effectiveSpeed, cadence), [cadence, effectiveSpeed]);
@@ -328,6 +333,9 @@ export default function App() {
   };
 
   const startRun = () => {
+    setActiveTrainingId(null);
+    setElapsed(0);
+    setDistanceKm(0);
     setStarted(true);
     setRunning(true);
     setTab('correr');
@@ -336,6 +344,7 @@ export default function App() {
 
   const startTraining = (trainingId: string) => {
     setSelectedTrainingId(trainingId);
+    setActiveTrainingId(trainingId);
     setElapsed(0);
     setDistanceKm(0);
     setStarted(true);
@@ -345,6 +354,7 @@ export default function App() {
   };
 
   const stopRun = () => {
+    setActiveTrainingId(null);
     setRunning(false);
     setStarted(false);
     setElapsed(0);
@@ -398,7 +408,7 @@ export default function App() {
             running={running}
             started={started}
             currentFoot={currentFoot}
-            selectedTraining={selectedTraining}
+            selectedTraining={activeTraining}
             activeTrainingSegment={activeTrainingSegment}
             onStart={startRun}
             onOpenTrainings={() => setTab('treinos')}
@@ -487,7 +497,7 @@ export default function App() {
             cadence={cadence}
             autoCadence={autoCadence}
             trainingCadence={trainingCadence}
-            selectedTraining={selectedTraining}
+            selectedTraining={activeTraining}
             onChangeCadence={(value) => setCadenceOverride(value)}
             onResetCadence={() => setCadenceOverride(null)}
             pace={effectivePace}
@@ -1678,26 +1688,6 @@ function RunScreenV2(props: {
         </View>
         <Text style={styles.title}>Pronto para correr</Text>
         <Text style={styles.subtitle}>Cadencia {props.cadence} BPM · pace {formatPace(props.pace)} /km</Text>
-        {props.selectedTraining ? (
-          <View style={styles.runTrainingPreview}>
-            <View style={styles.rowBetween}>
-              <View style={styles.levelBadge}>
-                <View style={styles.levelDot} />
-                <Text style={styles.levelBadgeText}>{props.selectedTraining.level}</Text>
-              </View>
-              <Text style={styles.metricHint}>{props.selectedTraining.durationMinutes} min</Text>
-            </View>
-            <Text style={styles.runTrainingPreviewTitle}>{props.selectedTraining.name}</Text>
-            <Text style={styles.runTrainingPreviewSubtitle}>
-              {props.selectedTraining.tagline ?? 'Treino progressivo com cadencia guiada em etapas.'}
-            </Text>
-            <TrainingTimeline
-              training={props.selectedTraining}
-              activeSegment={props.selectedTraining.segments[0] ?? null}
-              elapsedSeconds={0}
-            />
-          </View>
-        ) : null}
         <View style={styles.startActions}>
           <Pressable onPress={props.onStart} style={styles.primaryButton}>
             <Ionicons name="play" size={20} color="#0D1116" />
